@@ -10,6 +10,7 @@ class BoutInstall(object):
 
     Supports the installation of the following software:
         * gcc
+        * cmake
         * mpi
         * fftw
         * hdf5
@@ -18,7 +19,7 @@ class BoutInstall(object):
         * PETSc
         * BOUT++
         * ffpmeg
-
+        
     Examples
     --------
     FIXME
@@ -30,19 +31,49 @@ class BoutInstall(object):
         FIXME
         """
 
+        # Set the versions
+        self.gcc_version = '6.1.0'
+        cmake_major_minor_version = '3.7'
+        self.cmake_version = f'{cmake_major_minor_version}.2'
         self.mpi_version = '3.2'
-
-        # Hdf5
-        self.hdf5_version = '1.10.1'
-
-        # Depends on hdf5
+        self.fftw_version = '3.3.6-pl2'
+        hdf5_major_minor_version = '1.10'
+        self.hdf5_version = f'{hdf5_major_minor_version}.1'
         self.netcdf_version = '4.4.1.1'
         self.netcdf_cxx_version = '4.4.1.1'
-
-        # For plotting
-        self.ffmpeg_version = '3.1.4'
-        self.yasm_version = '1.3.0'
+        self.slepc_version = '3.4.4'
+        self.petsc_version = '3.4.5'
         self.nasm_version = '2.13.01'
+        self.yasm_version = '1.3.0'
+        self.ffmpeg_version = '3.1.4'
+
+        # Set the urls
+        self.gcc_url = (f'ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/'
+                        f'gcc-{self.gcc_version}/gcc-{self.gcc_version}.tar.gz')
+        self.cmake_url = (f'http://cmake.org/files/'
+                          f'v{cmake_major_minor_version}/'
+                          f'cmake-{self.cmake_version}.tar.gz')
+        self.mpi_url = (f'http://www.mpich.org/static/downloads/'
+                        f'{self.mpi_version}/mpich-{self.mpi_version}.tar.gz')
+        self.fftw_url = f'http://www.fftw.org/fftw-{self.fftw_version}.tar.gz'
+        self.hdf5_url = (f'wget https://support.hdfgroup.org/ftp/HDF5/releases/'
+                         f'hdf5-{hdf5_major_minor_version}/'
+                         f'hdf5-{self.hdf5_version}/src/'
+                         f'hdf5-{self.hdf5_version}.tar.gz')
+        self.netcdf_cxx_url = (f'http://github.com/Unidata/netcdf-cxx4/archive/'
+                               f'v{self.netcdf_cxx_version}.tar.gz')
+        self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
+                          f'filename=slepc-{self.slepc_version}.tar.gz')
+        self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
+                          f'petsc-{self.petsc_version}.tar.gz')
+        self.bout_url = (f'')
+        self.nasm_url = (f'http://www.nasm.us/pub/nasm/releasebuilds/' 
+                         f'{self.nasm_version}/'
+                         f'nasm-{self.nasm_version}.tar.gz')
+        self.yasm_url = (f'http://www.tortall.net/projects/yasm/releases/yasm-'
+                         f'{self.yasm_version}.tar.gz')
+        self.ffmpeg_url = (f'http://ffmpeg.org/releases/'
+                           f'ffmpeg-{self.ffmpeg_version}.tar.bz2')
 
         # Declare other class variables
         # Install dirs
@@ -106,3 +137,10 @@ class BoutInstall(object):
         self.install_dir.mkdir(parents=True, exist_ok=True)
         self.local_dir.mkdir(parents=True, exist_ok=True)
         self.examples_dir.mkdir(parents=True, exist_ok=True)
+
+# FIXME: x264 from git (needed for ffmpeg)
+# FIXME: BOUT++ from git
+# FIXME: Append -O slepc-${SLEPC_VERSION}.tar.gz to SLEPc wget
+# FIXME: netcdf depends on hdf5
+# FIXME: Append -O netcdf-cxx4-${NETCDF_CXX_VERSION}.tar.gz to netcdf-cxx wget
+# FIXME: prepend wget --no-check-certificate to cmake
