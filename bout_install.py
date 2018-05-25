@@ -91,7 +91,7 @@ class BoutInstall(object):
                          local_dir=None,
                          examples_dir=None):
         """
-        Set the directories to install to
+        Set the install directories for the packages
 
         Parameters
         ----------
@@ -175,8 +175,46 @@ class BoutInstall(object):
         tar.extractall()
         tar.close()
 
+    def configure(self, config_options=None):
+        """
+        Configure the package
+
+        Parameters
+        ----------
+        config_options : dict
+            Configuration options to use with `./configure`
+            The configuration options will be converted to `--key=val` during
+            runtime
+
+        Returns
+        -------
+        success : bool
+            Whether or not the configuration and make was successful
+        """
+
+        success = True
+
+        options = ''
+        if config_options is not None:
+            for key, val in config_options.items():
+                options += f' --{key}={val}'
+
+        config_str = f'./configure{options}'
+
+        # NOTE: Capturing both stdout and stderr at once, see
+        # https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess.stdout
+        result = subprocess.run(config_str.split(),
+                                stderr=subprocess.STDOUT)
+
+        if result.returncode != 0:
+            success = False
+
+            # FIXME: Something should probably be logged on error
+        return success
+
+
+# FIXME: Multiprocess: One process kills all on error, and error is logged
 # FIXME: x264 from git (needed for ffmpeg)
 # FIXME: BOUT++ from git
 # FIXME: netcdf depends on hdf5
 # FIXME: prepend wget --no-check-certificate to cmake
-
