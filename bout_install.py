@@ -2,6 +2,7 @@ import shutil
 import requests
 import multiprocessing
 import subprocess
+import tarfile
 
 from pathlib import Path
 
@@ -157,6 +158,22 @@ class BoutInstall(object):
 
         with path.open('wb') as f:
             shutil.copyfileobj(response.raw, f)
+
+    def untar(self, tar_file):
+        """
+        Untar a tar file
+
+        Parameters
+        ----------
+        tar_file : str or Path
+            Tar file to extract
+        """
+
+        tar_path = Path(tar_file).absolute()
+
+        tar = tarfile.open(tar_path)
+        tar.extractall()
+        tar.close()
 
 # FIXME: x264 from git (needed for ffmpeg)
 # FIXME: BOUT++ from git
