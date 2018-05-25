@@ -1,5 +1,7 @@
-import subprocess
+import shutil
+import requests
 import multiprocessing
+import subprocess
 
 from pathlib import Path
 
@@ -138,9 +140,26 @@ class BoutInstall(object):
         self.local_dir.mkdir(parents=True, exist_ok=True)
         self.examples_dir.mkdir(parents=True, exist_ok=True)
 
+    def get_tar_file(self, url):
+        """
+        Obtain a tar file from url
+
+        Parameters
+        ----------
+        url : str
+            The url to get from
+        """
+        response = requests.get(url)
+
+        # The file name is the last part of the url
+        file_name = url.split('/')[-1]
+        path = self.install_dir.joinpath(file_name)
+
+        with path.open('wb') as f:
+            shutil.copyfileobj(response.raw, f)
+
 # FIXME: x264 from git (needed for ffmpeg)
 # FIXME: BOUT++ from git
-# FIXME: Append -O slepc-${SLEPC_VERSION}.tar.gz to SLEPc wget
 # FIXME: netcdf depends on hdf5
-# FIXME: Append -O netcdf-cxx4-${NETCDF_CXX_VERSION}.tar.gz to netcdf-cxx wget
 # FIXME: prepend wget --no-check-certificate to cmake
+
