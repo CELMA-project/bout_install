@@ -159,7 +159,8 @@ class BoutInstall(object):
             raise RuntimeError('The installation directory has not been set, '
                                'please run self.set_install_dirs')
 
-        response = requests.get(url)
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
 
         # The file name is the last part of the url
         file_name = url.split('/')[-1]
@@ -179,13 +180,21 @@ class BoutInstall(object):
         ----------
         tar_file : str or Path
             Tar file to extract
+
+        Returns
+        -------
+        tar_dir : Path
+            The untarred directory
         """
 
         tar_path = Path(tar_file).absolute()
+        tar_dir = tar_path.with_suffix('').with_suffix('')
 
         tar = tarfile.open(tar_path)
-        tar.extractall()
+        tar.extractall(path=tar_dir)
         tar.close()
+
+        return tar_dir
 
     @staticmethod
     def configure(config_options=None):
