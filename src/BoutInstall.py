@@ -3,7 +3,6 @@ import requests
 import multiprocessing
 import subprocess
 import tarfile
-
 from pathlib import Path
 
 
@@ -159,7 +158,8 @@ class BoutInstall(object):
         with path.open('wb') as f:
             shutil.copyfileobj(response.raw, f)
 
-    def untar(self, tar_file):
+    @staticmethod
+    def untar(tar_file):
         """
         Untar a tar file
 
@@ -175,7 +175,8 @@ class BoutInstall(object):
         tar.extractall()
         tar.close()
 
-    def configure(self, config_options=None):
+    @staticmethod
+    def configure(config_options=None):
         """
         Configure the package
 
