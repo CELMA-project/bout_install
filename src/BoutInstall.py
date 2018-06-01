@@ -1,3 +1,4 @@
+import os
 import shutil
 import requests
 import multiprocessing
@@ -32,6 +33,9 @@ class BoutInstall(object):
         Sets the versions of the different software
         FIXME
         """
+
+        # Obtain the current working directory
+        self.cwd = Path.cwd()
 
         # Set the versions
         self.gcc_version = '6.1.0'
@@ -188,33 +192,30 @@ class BoutInstall(object):
         """
 
         tar_path = Path(tar_file).absolute()
+        tar_extract_dir = tar_path.parent
         tar_dir = tar_path.with_suffix('').with_suffix('')
 
         tar = tarfile.open(tar_path)
-        tar.extractall(path=tar_dir)
+        tar.extractall(path=tar_extract_dir)
         tar.close()
 
         return tar_dir
 
-    @staticmethod
-    def configure(config_options=None):
+    def configure(self, path, config_options=None):
         """
         Configure the package
 
         Parameters
         ----------
+        path : Path or str
+            Path to the config file
         config_options : dict
             Configuration options to use with `./configure`
             The configuration options will be converted to `--key=val` during
             runtime
-
-        Returns
-        -------
-        success : bool
-            Whether or not the configuration and make was successful
         """
 
-        success = True
+        os.chdir(path)
 
         options = ''
         if config_options is not None:
@@ -226,13 +227,11 @@ class BoutInstall(object):
         # NOTE: Capturing both stdout and stderr at once, see
         # https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess.stdout
         result = subprocess.run(config_str.split(),
-                                stderr=subprocess.STDOUT)
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
 
-        if result.returncode != 0:
-            success = False
-
-            # FIXME: Something should probably be logged on error
-        return success
+        os.chdir(self.cwd)
+        result.check_returncode()
 
 
 # FIXME: Multiprocess: One process kills all on error, and error is logged
@@ -240,3 +239,4 @@ class BoutInstall(object):
 # FIXME: BOUT++ from git
 # FIXME: netcdf depends on hdf5
 # FIXME: prepend wget --no-check-certificate to cmake
+# FIXME: gfortran as a dependency?

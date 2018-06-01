@@ -72,7 +72,16 @@ class TestBoutInstall(unittest.TestCase):
         self.assertTrue(tar_dir.is_dir())
 
     def test_configure(self):
-        self.fail()
+        """
+        Test for successful configuring
+        """
+
+        self.installer.set_install_dirs(main_dir=self.main_dir)
+        path = self.installer.get_tar_file(url=self.installer.fftw_url)
+        tar_dir = self.installer.untar(path)
+        config_options = dict(prefix=str(self.installer.local_dir))
+        self.installer.configure(tar_dir, config_options=config_options)
+        self.assertTrue(tar_dir.joinpath('config.log').is_file())
 
 
 if __name__ == '__main__':
