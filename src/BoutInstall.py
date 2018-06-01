@@ -268,3 +268,4 @@ class BoutInstall(object):
 # FIXME: netcdf depends on hdf5
 # FIXME: prepend wget --no-check-certificate to cmake
 # FIXME: gfortran as a dependency?
+# FIXME: Update README
