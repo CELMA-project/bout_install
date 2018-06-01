@@ -50,7 +50,16 @@ class TestBoutInstall(unittest.TestCase):
         self.assertTrue(examples_dir.is_dir())
 
     def test_get_tar_file(self):
-        self.fail()
+        """
+        Tests that the .tar files can be downloaded
+        """
+
+        self.assertRaises(RuntimeError,
+                          self.installer.get_tar_file,
+                          url=self.installer.fftw_url)
+        self.installer.set_install_dirs(main_dir=self.main_dir)
+        path = self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.assertTrue(path.is_file())
 
     def test_untar(self):
         self.fail()

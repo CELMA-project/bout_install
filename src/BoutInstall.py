@@ -148,7 +148,17 @@ class BoutInstall(object):
         ----------
         url : str
             The url to get from
+
+        Returns
+        -------
+        path : Path
+            The path to the tar file
         """
+
+        if self.install_dir is None:
+            raise RuntimeError('The installation directory has not been set, '
+                               'please run self.set_install_dirs')
+
         response = requests.get(url)
 
         # The file name is the last part of the url
@@ -157,6 +167,8 @@ class BoutInstall(object):
 
         with path.open('wb') as f:
             shutil.copyfileobj(response.raw, f)
+
+        return path
 
     @staticmethod
     def untar(tar_file):
