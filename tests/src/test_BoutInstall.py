@@ -83,6 +83,20 @@ class TestBoutInstall(unittest.TestCase):
         self.installer.configure(tar_dir, config_options=config_options)
         self.assertTrue(tar_dir.joinpath('config.log').is_file())
 
+    def test_make(self):
+        """
+        Test for successful making
+        """
+
+        self.installer.set_install_dirs(main_dir=self.main_dir)
+        path = self.installer.get_tar_file(url=self.installer.fftw_url)
+        tar_dir = self.installer.untar(path)
+        config_options = dict(prefix=str(self.installer.local_dir))
+        self.installer.configure(tar_dir, config_options=config_options)
+        self.installer.make(tar_dir)
+        bin_file = self.installer.local_dir.joinpath('bin', 'fftw-wisdom')
+        self.assertTrue(bin_file.is_file())
+
 
 if __name__ == '__main__':
     unittest.main()

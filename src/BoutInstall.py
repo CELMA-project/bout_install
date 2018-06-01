@@ -224,14 +224,42 @@ class BoutInstall(object):
 
         config_str = f'./configure{options}'
 
-        # NOTE: Capturing both stdout and stderr at once, see
-        # https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess.stdout
         result = subprocess.run(config_str.split(),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
         os.chdir(self.cwd)
         result.check_returncode()
+
+    def make(self, path):
+        """
+        Make the package
+
+        Parameters
+        ----------
+        path : Path or str
+            Path to the config file
+        """
+
+        os.chdir(path)
+
+        make_str = 'make'
+
+        result = subprocess.run(make_str.split(),
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+
+        result.check_returncode()
+
+        make_install_str = 'make install'
+
+        result = subprocess.run(make_install_str.split(),
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+
+        result.check_returncode()
+
+        os.chdir(self.cwd)
 
 
 # FIXME: Multiprocess: One process kills all on error, and error is logged
