@@ -26,6 +26,16 @@ class TestBoutInstall(unittest.TestCase):
         shutil.rmtree(self.main_dir, ignore_errors=True)
         shutil.rmtree(self.other_dir, ignore_errors=True)
 
+    def test__setup_logger(self):
+        """
+        Test that the logger is working
+        """
+
+        log_path = self.main_dir.joinpath('test.log')
+        installer = BoutInstall(log_path)
+        installer.logger.info('This is a test')
+        self.assertTrue(log_path.is_file())
+
     def test_set_install_dirs(self):
         """
         Tests that the directories are properly installed
