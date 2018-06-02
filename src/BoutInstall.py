@@ -1,8 +1,9 @@
-import os
+import configparser
 import logging
-import shutil
-import requests
 import multiprocessing
+import os
+import requests
+import shutil
 import subprocess
 import tarfile
 from pathlib import Path
@@ -32,6 +33,8 @@ class BoutInstall(object):
     def __init__(self, log_path=None):
         """
         Sets the versions of the different software
+
+        configparser
         FIXME
 
         Parameters
@@ -41,6 +44,9 @@ class BoutInstall(object):
             If None, the log will directed to stderr
         """
 
+        config = configparser.ConfigParser()
+        config.read_file(Path(__file__).parent.joinpath('config.ini').open())
+
         # Set input
         self.log_path = log_path
 
@@ -48,20 +54,20 @@ class BoutInstall(object):
         self.cwd = Path.cwd()
 
         # Set the versions
-        self.gcc_version = '6.1.0'
-        cmake_major_minor_version = '3.7'
-        self.cmake_version = f'{cmake_major_minor_version}.2'
-        self.mpi_version = '3.2'
-        self.fftw_version = '3.3.6-pl2'
-        hdf5_major_minor_version = '1.10'
-        self.hdf5_version = f'{hdf5_major_minor_version}.1'
-        self.netcdf_version = '4.4.1.1'
-        self.netcdf_cxx_version = '4.4.1.1'
-        self.slepc_version = '3.4.4'
-        self.petsc_version = '3.4.5'
-        self.nasm_version = '2.13.01'
-        self.yasm_version = '1.3.0'
-        self.ffmpeg_version = '3.1.4'
+        self.gcc_version = config['versions']['gcc']
+        self.cmake_version = config['versions']['cmake']
+        cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
+        self.mpi_version = config['versions']['mpi']
+        self.fftw_version = config['versions']['fftw']
+        self.hdf5_version = config['versions']['hdf5']
+        hdf5_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
+        self.netcdf_version = config['versions']['netcdf']
+        self.netcdf_cxx_version = config['versions']['netcdf_cxx']
+        self.slepc_version = config['versions']['slepc']
+        self.petsc_version = config['versions']['petsc']
+        self.nasm_version = config['versions']['nasm']
+        self.yasm_version = config['versions']['yasm']
+        self.ffmpeg_version = config['versions']['ffmpeg']
 
         # Set the urls
         self.gcc_url = (f'ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/'
