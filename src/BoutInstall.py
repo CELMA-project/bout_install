@@ -326,6 +326,59 @@ class BoutInstall(object):
 
         os.chdir(self.cwd)
 
+    def install_package(self,
+                        url,
+                        file_from_make,
+                        overwrite_on_exist=False,
+                        extra_config_option=None):
+        """
+        Installs a package if it's not installed
+
+        Parameters
+        ----------
+        url : str
+            Url to the tar file of the package
+        file_from_make : Path or str
+            File originating from the make processes (used to check if the
+            package has been made)
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        extra_config_option : dict
+            Configure option to include.
+            --prefix=self.local_dir is already added as an option
+        """
+
+        tar_file_path = self.get_tar_file_path(url)
+        tar_dir = self.get_tar_dir(tar_file_path)
+        config_log_path = tar_dir.joinpath('config.log')
+
+        if not tar_file_path.is_file() or overwrite_on_exist:
+            self.logger.info(f'{tar_file_path} not found, downloading')
+            self.get_tar_file(url)
+        else:
+            self.logger.info(f'{tar_file_path} found, skipping download')
+
+        if not tar_dir.is_dir() or overwrite_on_exist:
+            self.logger.info(f'{tar_dir} not found, untarring')
+            self.untar(tar_file_path)
+        else:
+            self.logger.info(f'{tar_dir} found, skipping untarring')
+
+        if not config_log_path.is_file() or overwrite_on_exist:
+            self.logger.info(f'{config_log_path} not found, configuring')
+            config_options = dict(prefix=str(self.local_dir))
+            if extra_config_option is not None:
+                config_options = {**config_options, **extra_config_option}
+            self.configure(tar_dir, config_options=config_options)
+        else:
+            self.logger.info(f'{tar_dir} found, skipping untarring')
+
+        if not file_from_make.is_file() or overwrite_on_exist:
+            self.logger.info(f'{file_from_make} not found, running make')
+            self.make(tar_dir)
+        else:
+            self.logger.info(f'{file_from_make} found, skipping making')
+
     def _raise_subprocess(self, result):
         """
         Raises errors from the subprocess in a clean way

@@ -122,6 +122,16 @@ class TestBoutInstall(unittest.TestCase):
         bin_file = self.installer.local_dir.joinpath('bin', 'fftw-wisdom')
         self.assertTrue(bin_file.is_file())
 
+    def test_install_package(self):
+        """
+        Tests that the install wrapper is working
+        """
+
+        self.installer.set_install_dirs(main_dir=self.main_dir)
+        bin_file = self.installer.local_dir.joinpath('bin', 'fftw-wisdom')
+        self.installer.install_package(self.installer.fftw_url, bin_file)
+        self.assertTrue(bin_file.is_file())
+
 
 if __name__ == '__main__':
     unittest.main()
