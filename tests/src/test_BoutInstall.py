@@ -68,8 +68,11 @@ class TestBoutInstall(unittest.TestCase):
                           self.installer.get_tar_file,
                           url=self.installer.fftw_url)
         self.installer.set_install_dirs(main_dir=self.main_dir)
-        path = self.installer.get_tar_file(url=self.installer.fftw_url)
-        self.assertTrue(path.is_file())
+        tar_file_path = \
+            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+
+        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.assertTrue(tar_file_path.is_file())
 
     def test_untar(self):
         """
@@ -77,8 +80,12 @@ class TestBoutInstall(unittest.TestCase):
         """
 
         self.installer.set_install_dirs(main_dir=self.main_dir)
-        path = self.installer.get_tar_file(url=self.installer.fftw_url)
-        tar_dir = self.installer.untar(path)
+        tar_file_path = \
+            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+        tar_dir = self.installer.get_tar_dir(tar_file_path)
+
+        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.installer.untar(tar_file_path)
         self.assertTrue(tar_dir.is_dir())
 
     def test_configure(self):
@@ -87,8 +94,12 @@ class TestBoutInstall(unittest.TestCase):
         """
 
         self.installer.set_install_dirs(main_dir=self.main_dir)
-        path = self.installer.get_tar_file(url=self.installer.fftw_url)
-        tar_dir = self.installer.untar(path)
+        tar_file_path = \
+            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+        tar_dir = self.installer.get_tar_dir(tar_file_path)
+
+        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.installer.untar(tar_file_path)
         config_options = dict(prefix=str(self.installer.local_dir))
         self.installer.configure(tar_dir, config_options=config_options)
         self.assertTrue(tar_dir.joinpath('config.log').is_file())
@@ -99,8 +110,12 @@ class TestBoutInstall(unittest.TestCase):
         """
 
         self.installer.set_install_dirs(main_dir=self.main_dir)
-        path = self.installer.get_tar_file(url=self.installer.fftw_url)
-        tar_dir = self.installer.untar(path)
+        tar_file_path = \
+            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+        tar_dir = self.installer.get_tar_dir(tar_file_path)
+
+        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.installer.untar(tar_file_path)
         config_options = dict(prefix=str(self.installer.local_dir))
         self.installer.configure(tar_dir, config_options=config_options)
         self.installer.make(tar_dir)

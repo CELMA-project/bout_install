@@ -44,8 +44,9 @@ class BoutInstall(object):
             If None, the log will directed to stderr
         """
 
-        config = configparser.ConfigParser()
-        config.read_file(Path(__file__).parent.joinpath('config.ini').open())
+        self.config = configparser.ConfigParser()
+        with Path(__file__).parent.joinpath('config.ini').open() as f:
+            self.config.read_file(f)
 
         # Set input
         self.log_path = log_path
@@ -54,20 +55,20 @@ class BoutInstall(object):
         self.cwd = Path.cwd()
 
         # Set the versions
-        self.gcc_version = config['versions']['gcc']
-        self.cmake_version = config['versions']['cmake']
+        self.gcc_version = self.config['versions']['gcc']
+        self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-        self.mpi_version = config['versions']['mpi']
-        self.fftw_version = config['versions']['fftw']
-        self.hdf5_version = config['versions']['hdf5']
+        self.mpi_version = self.config['versions']['mpi']
+        self.fftw_version = self.config['versions']['fftw']
+        self.hdf5_version = self.config['versions']['hdf5']
         hdf5_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-        self.netcdf_version = config['versions']['netcdf']
-        self.netcdf_cxx_version = config['versions']['netcdf_cxx']
-        self.slepc_version = config['versions']['slepc']
-        self.petsc_version = config['versions']['petsc']
-        self.nasm_version = config['versions']['nasm']
-        self.yasm_version = config['versions']['yasm']
-        self.ffmpeg_version = config['versions']['ffmpeg']
+        self.netcdf_version = self.config['versions']['netcdf']
+        self.netcdf_cxx_version = self.config['versions']['netcdf_cxx']
+        self.slepc_version = self.config['versions']['slepc']
+        self.petsc_version = self.config['versions']['petsc']
+        self.nasm_version = self.config['versions']['nasm']
+        self.yasm_version = self.config['versions']['yasm']
+        self.ffmpeg_version = self.config['versions']['ffmpeg']
 
         # Set the urls
         self.gcc_url = (f'ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/'
@@ -193,12 +194,7 @@ class BoutInstall(object):
         Parameters
         ----------
         url : str
-            The url to get from
-
-        Returns
-        -------
-        path : Path
-            The path to the tar file
+            The url to get the tar file from
         """
 
         if self.install_dir is None:
@@ -208,39 +204,65 @@ class BoutInstall(object):
         response = requests.get(url, stream=True)
         response.raise_for_status()
 
-        # The file name is the last part of the url
-        file_name = url.split('/')[-1]
-        path = self.install_dir.joinpath(file_name)
+        tar_file_path = self.get_tar_file_path(url)
 
-        with path.open('wb') as f:
+        with tar_file_path.open('wb') as f:
             shutil.copyfileobj(response.raw, f)
 
-        return path
+    def get_tar_file_path(self, url):
+        """
+        Returns the path to the tar file
+
+        Parameters
+        ----------
+        url : str
+            The url to get the tar file from
+
+        Returns
+        -------
+        tar_file_path : Path
+            The path to the tar file
+        """
+
+        # The file name is the last part of the url
+        file_name = url.split('/')[-1]
+        tar_file_path = self.install_dir.joinpath(file_name)
+        return tar_file_path
 
     @staticmethod
-    def untar(tar_file):
+    def untar(tar_path):
         """
         Untar a tar file
 
         Parameters
         ----------
-        tar_file : str or Path
+        tar_path : str or Path
             Tar file to extract
+        """
+
+        tar_path = Path(tar_path).absolute()
+        tar_extract_dir = tar_path.parent
+
+        tar = tarfile.open(tar_path)
+        tar.extractall(path=tar_extract_dir)
+        tar.close()
+
+    @staticmethod
+    def get_tar_dir(tar_path):
+        """
+        Returns the path to the tar directory (directory of untarred files)
+
+        Parameters
+        ----------
+        tar_path : str or Path
+            Path to tar file
 
         Returns
         -------
         tar_dir : Path
             The untarred directory
         """
-
-        tar_path = Path(tar_file).absolute()
-        tar_extract_dir = tar_path.parent
-        tar_dir = tar_path.with_suffix('').with_suffix('')
-
-        tar = tarfile.open(tar_path)
-        tar.extractall(path=tar_extract_dir)
-        tar.close()
-
+        tar_dir = Path(tar_path).absolute().with_suffix('').with_suffix('')
         return tar_dir
 
     def configure(self, path, config_options=None):
@@ -281,7 +303,7 @@ class BoutInstall(object):
         Parameters
         ----------
         path : Path or str
-            Path to the config file
+            Path to the configure file
         """
 
         os.chdir(path)
@@ -328,5 +350,3 @@ class BoutInstall(object):
 # FIXME: prepend wget --no-check-certificate to cmake
 # FIXME: gfortran as a dependency?
 # FIXME: Update README
-# FIXME: Add versions to a config file
-# FIXME: Add logging test
