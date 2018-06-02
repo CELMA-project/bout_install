@@ -1,4 +1,5 @@
 import os
+import logging
 import shutil
 import requests
 import multiprocessing
@@ -28,11 +29,20 @@ class BoutInstall(object):
     FIXME
     """
 
-    def __init__(self):
+    def __init__(self, log_path=None):
         """
         Sets the versions of the different software
         FIXME
+
+        Parameters
+        ----------
+        log_path : None or Path or str
+            Path to the log file containing the log of BoutInstall.
+            If None, the log will directed to stderr
         """
+
+        # Set input
+        self.log_path = log_path
 
         # Obtain the current working directory
         self.cwd = Path.cwd()
@@ -87,6 +97,32 @@ class BoutInstall(object):
         self.install_dir = None
         self.local_dir = None
         self.examples_dir = None
+
+        self.logger = None
+
+        # Setup the logger
+        self._setup_logger()
+
+    def _setup_logger(self):
+        """
+        Sets up the logger instance.
+        """
+        formatter = logging.Formatter('[{asctime}][{levelname:<7}] {message}',
+                                      style='{')
+
+        if self.log_path is not None:
+            log_path = Path(self.log_path).absolute()
+            log_dir = log_path.parent
+            log_dir.mkdir(exist_ok=True, parents=True)
+            handler = logging.FileHandler(str(log_path))
+        else:
+            handler = logging.StreamHandler()
+
+        handler.setFormatter(formatter)
+
+        self.logger = logging.getLogger('bout_install')
+        self.logger.setLevel(logging.INFO)
+        self.logger.addHandler(handler)
 
     def set_install_dirs(self,
                          main_dir=None,
@@ -229,7 +265,8 @@ class BoutInstall(object):
                                 stderr=subprocess.PIPE)
 
         os.chdir(self.cwd)
-        result.check_returncode()
+        if result.returncode != 0:
+            self._raise_subprocess(result)
 
     def make(self, path):
         """
@@ -261,6 +298,22 @@ class BoutInstall(object):
 
         os.chdir(self.cwd)
 
+    def _raise_subprocess(self, result):
+        """
+        Raises errors from the subprocess in a clean way
+
+        Parameters
+        ----------
+        result : subprocess.CompletedProcess
+            The result from the subprocess
+        """
+
+        self.logger.error('Subprocess failed with stdout:')
+        self.logger.error(result.stdout)
+        self.logger.error('and stderr:')
+        self.logger.error(result.stderr)
+
+        result.check_returncode()
 
 # FIXME: Multiprocess: One process kills all on error, and error is logged
 # FIXME: x264 from git (needed for ffmpeg)
@@ -269,3 +322,5 @@ class BoutInstall(object):
 # FIXME: prepend wget --no-check-certificate to cmake
 # FIXME: gfortran as a dependency?
 # FIXME: Update README
+# FIXME: Add versions to a config file
+# FIXME: Add logging test
