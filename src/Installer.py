@@ -55,10 +55,15 @@ class Installer(object):
         self.cwd = Path.cwd()
 
         # Obtain install dirs
-        self.main_dir = self.config['install_dirs']['main_dir']
-        self.install_dir = self.config['install_dirs']['install_dir']
-        self.local_dir = self.config['install_dirs']['local_dir']
-        self.examples_dir = self.config['install_dirs']['examples_dir']
+        main_dir = self.config['install_dirs']['main_dir']
+        install_dir = self.config['install_dirs']['install_dir']
+        local_dir = self.config['install_dirs']['local_dir']
+        examples_dir = self.config['install_dirs']['examples_dir']
+
+        self.main_dir = main_dir if main_dir != '' else None
+        self.install_dir = install_dir if install_dir != '' else None
+        self.local_dir = local_dir if local_dir != '' else None
+        self.examples_dir = examples_dir if examples_dir != '' else None
 
         # Setup the install dirs
         self.setup_install_dirs(main_dir=self.main_dir,
@@ -137,7 +142,6 @@ class Installer(object):
         self.logger.setLevel(logging.INFO)
         self.logger.addHandler(handler)
 
-    # FIXME: Should be set in the config
     def setup_install_dirs(self,
                            main_dir=None,
                            install_dir=None,

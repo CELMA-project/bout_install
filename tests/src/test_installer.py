@@ -16,7 +16,6 @@ class TestInstall(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.installer = Installer()
         root_dir = Path(__file__).absolute().parents[2]
         self.main_dir = root_dir.joinpath('test_main_dir')
         self.other_dir = root_dir.joinpath('test_other_dir')
@@ -34,6 +33,8 @@ class TestInstall(unittest.TestCase):
         config['install_dirs']['main_dir'] = 'test_main_dir'
         with self.config_ini_path.open('w') as f:
             config.write(f)
+
+        self.installer = Installer()
 
     def tearDown(self):
         """
