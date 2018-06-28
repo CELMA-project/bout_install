@@ -9,7 +9,7 @@ import tarfile
 from pathlib import Path
 
 
-class BoutInstall(object):
+class Installer(object):
     """
     Installation object for installing dependencies needed for the CELMA code.
 
@@ -40,11 +40,11 @@ class BoutInstall(object):
         Parameters
         ----------
         log_path : None or Path or str
-            Path to the log file containing the log of BoutInstall.
+            Path to the log file containing the log of Installer.
             If None, the log will directed to stderr
         """
 
-        self.config = configparser.ConfigParser()
+        self.config = configparser.ConfigParser(allow_no_value=True)
         with Path(__file__).parent.joinpath('config.ini').open() as f:
             self.config.read_file(f)
 
@@ -53,6 +53,18 @@ class BoutInstall(object):
 
         # Obtain the current working directory
         self.cwd = Path.cwd()
+
+        # Obtain install dirs
+        self.main_dir = self.config['install_dirs']['main_dir']
+        self.install_dir = self.config['install_dirs']['install_dir']
+        self.local_dir = self.config['install_dirs']['local_dir']
+        self.examples_dir = self.config['install_dirs']['examples_dir']
+
+        # Setup the install dirs
+        self.setup_install_dirs(main_dir=self.main_dir,
+                                install_dir=self.install_dir,
+                                local_dir=self.local_dir,
+                                examples_dir=self.examples_dir)
 
         # Set the versions
         self.gcc_version = self.config['versions']['gcc']
@@ -99,12 +111,6 @@ class BoutInstall(object):
                            f'ffmpeg-{self.ffmpeg_version}.tar.bz2')
 
         # Declare other class variables
-        # Install dirs
-        self.main_dir = None
-        self.install_dir = None
-        self.local_dir = None
-        self.examples_dir = None
-
         self.logger = None
 
         # Setup the logger
@@ -131,11 +137,12 @@ class BoutInstall(object):
         self.logger.setLevel(logging.INFO)
         self.logger.addHandler(handler)
 
-    def set_install_dirs(self,
-                         main_dir=None,
-                         install_dir=None,
-                         local_dir=None,
-                         examples_dir=None):
+    # FIXME: Should be set in the config
+    def setup_install_dirs(self,
+                           main_dir=None,
+                           install_dir=None,
+                           local_dir=None,
+                           examples_dir=None):
         """
         Set the install directories for the packages
 
@@ -196,10 +203,6 @@ class BoutInstall(object):
         url : str
             The url to get the tar file from
         """
-
-        if self.install_dir is None:
-            raise RuntimeError('The installation directory has not been set, '
-                               'please run self.set_install_dirs')
 
         response = requests.get(url, stream=True)
         response.raise_for_status()
@@ -294,7 +297,7 @@ class BoutInstall(object):
 
         os.chdir(self.cwd)
         if result.returncode != 0:
-            self._raise_subprocess(result)
+            self._spawn_subprocess(result)
 
     def make(self, path):
         """
@@ -379,7 +382,7 @@ class BoutInstall(object):
         else:
             self.logger.info(f'{file_from_make} found, skipping making')
 
-    def _raise_subprocess(self, result):
+    def _spawn_subprocess(self, result):
         """
         Raises errors from the subprocess in a clean way
 
