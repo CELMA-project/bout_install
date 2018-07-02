@@ -30,7 +30,9 @@ class Installer(object):
     FIXME
     """
 
-    def __init__(self, log_path=None):
+    def __init__(self,
+                 config_path=Path(__file__).parent.joinpath('config.ini'),
+                 log_path=None):
         """
         Sets the versions of the different software
 
@@ -39,13 +41,15 @@ class Installer(object):
 
         Parameters
         ----------
+        config_path : Path or str
+            The path to the configure file
         log_path : None or Path or str
             Path to the log file containing the log of Installer.
             If None, the log will directed to stderr
         """
 
         self.config = configparser.ConfigParser(allow_no_value=True)
-        with Path(__file__).parent.joinpath('config.ini').open() as f:
+        with Path(config_path).open() as f:
             self.config.read_file(f)
 
         # Set input
@@ -76,7 +80,6 @@ class Installer(object):
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
         self.mpi_version = self.config['versions']['mpi']
-        self.fftw_version = self.config['versions']['fftw']
         self.hdf5_version = self.config['versions']['hdf5']
         hdf5_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
         self.netcdf_version = self.config['versions']['netcdf']
@@ -95,7 +98,6 @@ class Installer(object):
                           f'cmake-{self.cmake_version}.tar.gz')
         self.mpi_url = (f'http://www.mpich.org/static/downloads/'
                         f'{self.mpi_version}/mpich-{self.mpi_version}.tar.gz')
-        self.fftw_url = f'http://www.fftw.org/fftw-{self.fftw_version}.tar.gz'
         self.hdf5_url = (f'wget https://support.hdfgroup.org/ftp/HDF5/releases/'
                          f'hdf5-{hdf5_major_minor_version}/'
                          f'hdf5-{self.hdf5_version}/src/'

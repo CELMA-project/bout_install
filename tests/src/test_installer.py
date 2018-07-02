@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-import shutil
-import configparser
-from pathlib import Path
 from src.Installer import Installer
+from tests.utils import BaseTestSetup
 
 
 class TestInstall(unittest.TestCase):
@@ -16,34 +14,28 @@ class TestInstall(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        root_dir = Path(__file__).absolute().parents[2]
-        self.main_dir = root_dir.joinpath('test_main_dir')
-        self.other_dir = root_dir.joinpath('test_other_dir')
+        self.base_setup = BaseTestSetup('install')
+        self.base_setup.set_up()
 
-        # Make a backup of config.ini
-        self.config_ini_path = root_dir.joinpath('src', 'config.ini')
-        self.config_ini_bak_path = root_dir.joinpath('src', 'config.ini.bak')
-        shutil.copy(self.config_ini_path, self.config_ini_bak_path)
+        # Get the main dir and other dir
+        self.main_dir = self.base_setup.main_dir
+        self.other_dir = self.base_setup.other_dir
 
-        # Replace the main_dir
-        config = configparser.ConfigParser(allow_no_value=True)
-        with self.config_ini_path.open() as f:
-            config.read_file(f)
+        # Setup the config path
+        self.config = self.base_setup.test_config_ini_path
 
-        config['install_dirs']['main_dir'] = 'test_main_dir'
-        with self.config_ini_path.open('w') as f:
-            config.write(f)
+        # Get the fftw url
+        fftw_version = self.base_setup.config['versions']['fftw']
+        self.fftw_url = f'http://www.fftw.org/fftw-{fftw_version}.tar.gz'
 
-        self.installer = Installer()
+        self.installer = Installer(config_path=self.config)
 
     def tearDown(self):
         """
         Remove created directories and files, restore config.ini
         """
 
-        shutil.rmtree(self.main_dir, ignore_errors=True)
-        shutil.rmtree(self.other_dir, ignore_errors=True)
-        shutil.move(self.config_ini_bak_path, self.config_ini_path)
+        self.base_setup.tear_down()
 
     def test__setup_logger(self):
         """
@@ -51,7 +43,8 @@ class TestInstall(unittest.TestCase):
         """
 
         log_path = self.main_dir.joinpath('test.log')
-        installer = Installer(log_path)
+        installer = Installer(config_path=self.config,
+                              log_path=log_path)
         installer.logger.info('This is a test')
         self.assertTrue(log_path.is_file())
 
@@ -85,9 +78,9 @@ class TestInstall(unittest.TestCase):
 
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         tar_file_path = \
-            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+            self.installer.get_tar_file_path(url=self.fftw_url)
 
-        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.installer.get_tar_file(url=self.fftw_url)
         self.assertTrue(tar_file_path.is_file())
 
     def test_untar(self):
@@ -97,10 +90,10 @@ class TestInstall(unittest.TestCase):
 
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         tar_file_path = \
-            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+            self.installer.get_tar_file_path(url=self.fftw_url)
         tar_dir = self.installer.get_tar_dir(tar_file_path)
 
-        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.installer.get_tar_file(url=self.fftw_url)
         self.installer.untar(tar_file_path)
         self.assertTrue(tar_dir.is_dir())
 
@@ -111,10 +104,10 @@ class TestInstall(unittest.TestCase):
 
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         tar_file_path = \
-            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+            self.installer.get_tar_file_path(url=self.fftw_url)
         tar_dir = self.installer.get_tar_dir(tar_file_path)
 
-        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.installer.get_tar_file(url=self.fftw_url)
         self.installer.untar(tar_file_path)
         config_options = dict(prefix=str(self.installer.local_dir))
         self.installer.configure(tar_dir, config_options=config_options)
@@ -127,10 +120,10 @@ class TestInstall(unittest.TestCase):
 
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         tar_file_path = \
-            self.installer.get_tar_file_path(url=self.installer.fftw_url)
+            self.installer.get_tar_file_path(url=self.fftw_url)
         tar_dir = self.installer.get_tar_dir(tar_file_path)
 
-        self.installer.get_tar_file(url=self.installer.fftw_url)
+        self.installer.get_tar_file(url=self.fftw_url)
         self.installer.untar(tar_file_path)
         config_options = dict(prefix=str(self.installer.local_dir))
         self.installer.configure(tar_dir, config_options=config_options)
@@ -145,7 +138,7 @@ class TestInstall(unittest.TestCase):
 
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         bin_file = self.installer.local_dir.joinpath('bin', 'fftw-wisdom')
-        self.installer.install_package(self.installer.fftw_url, bin_file)
+        self.installer.install_package(self.fftw_url, bin_file)
         self.assertTrue(bin_file.is_file())
 
 
