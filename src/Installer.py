@@ -79,7 +79,6 @@ class Installer(object):
         self.gcc_version = self.config['versions']['gcc']
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-        self.mpi_version = self.config['versions']['mpi']
         self.hdf5_version = self.config['versions']['hdf5']
         hdf5_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
         self.netcdf_version = self.config['versions']['netcdf']
@@ -96,8 +95,6 @@ class Installer(object):
         self.cmake_url = (f'http://cmake.org/files/'
                           f'v{cmake_major_minor_version}/'
                           f'cmake-{self.cmake_version}.tar.gz')
-        self.mpi_url = (f'http://www.mpich.org/static/downloads/'
-                        f'{self.mpi_version}/mpich-{self.mpi_version}.tar.gz')
         self.hdf5_url = (f'wget https://support.hdfgroup.org/ftp/HDF5/releases/'
                          f'hdf5-{hdf5_major_minor_version}/'
                          f'hdf5-{self.hdf5_version}/src/'
