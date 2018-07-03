@@ -24,7 +24,7 @@ class Installer(object):
         * PETSc
         * BOUT++
         * ffpmeg
-        
+
     Examples
     --------
     FIXME
@@ -100,7 +100,7 @@ class Installer(object):
         self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
                           f'petsc-{self.petsc_version}.tar.gz')
         self.bout_url = (f'')
-        self.nasm_url = (f'http://www.nasm.us/pub/nasm/releasebuilds/' 
+        self.nasm_url = (f'http://www.nasm.us/pub/nasm/releasebuilds/'
                          f'{self.nasm_version}/'
                          f'nasm-{self.nasm_version}.tar.gz')
         self.yasm_url = (f'http://www.tortall.net/projects/yasm/releases/yasm-'
@@ -207,6 +207,9 @@ class Installer(object):
         tar_file_path = self.get_tar_file_path(url)
 
         with tar_file_path.open('wb') as f:
+            # Decode in case transport encoding was applied
+            # https://stackoverflow.com/questions/32463419/having-trouble-getting-requests-2-7-0-to-automatically-decompress-gzip
+            response.raw.decode_content = True
             shutil.copyfileobj(response.raw, f)
 
     def get_tar_file_path(self, url):
@@ -229,7 +232,8 @@ class Installer(object):
         tar_file_path = self.install_dir.joinpath(file_name)
         return tar_file_path
 
-    def untar(self, tar_path):
+    @staticmethod
+    def untar(tar_path):
         """
         Untar a tar file
 
@@ -242,13 +246,9 @@ class Installer(object):
         tar_path = Path(tar_path).absolute()
         tar_extract_dir = tar_path.parent
 
-        try:
-            tar = tarfile.open(tar_path)
-            tar.extractall(path=tar_extract_dir)
-            tar.close()
-        except tarfile.ReadError:
-            # For some reason the tarfile couldn't be opened
-            self.run_subprocess(f'tar -xvf {tar_path} -C {tar_extract_dir}')
+        tar = tarfile.open(tar_path)
+        tar.extractall(path=tar_extract_dir)
+        tar.close()
 
     @staticmethod
     def get_tar_dir(tar_path):
@@ -291,20 +291,7 @@ class Installer(object):
 
         config_str = f'./configure{options}'
 
-        self.run_subprocess(config_str)
-
-    def run_subprocess(self, command):
-        """
-        Runs the command as a subprocess
-
-        Terminates the process if an error has occured
-
-        Parameters
-        ----------
-        command : str
-            The command to run
-        """
-        result = subprocess.run(command.split(),
+        result = subprocess.run(config_str.split(),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
