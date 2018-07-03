@@ -4,6 +4,8 @@ compiler: gcc
 
 python:
   - "3.6"
+before_install:
+  - sudo apt-get install gfortran
 install:
   - pip install codecov pytest-cov
 script:
