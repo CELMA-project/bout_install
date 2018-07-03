@@ -79,8 +79,6 @@ class Installer(object):
         self.gcc_version = self.config['versions']['gcc']
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-        self.hdf5_version = self.config['versions']['hdf5']
-        hdf5_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
         self.netcdf_version = self.config['versions']['netcdf']
         self.netcdf_cxx_version = self.config['versions']['netcdf_cxx']
         self.slepc_version = self.config['versions']['slepc']
@@ -95,10 +93,6 @@ class Installer(object):
         self.cmake_url = (f'http://cmake.org/files/'
                           f'v{cmake_major_minor_version}/'
                           f'cmake-{self.cmake_version}.tar.gz')
-        self.hdf5_url = (f'wget https://support.hdfgroup.org/ftp/HDF5/releases/'
-                         f'hdf5-{hdf5_major_minor_version}/'
-                         f'hdf5-{self.hdf5_version}/src/'
-                         f'hdf5-{self.hdf5_version}.tar.gz')
         self.netcdf_cxx_url = (f'http://github.com/Unidata/netcdf-cxx4/archive/'
                                f'v{self.netcdf_cxx_version}.tar.gz')
         self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
@@ -235,8 +229,7 @@ class Installer(object):
         tar_file_path = self.install_dir.joinpath(file_name)
         return tar_file_path
 
-    @staticmethod
-    def untar(tar_path):
+    def untar(self, tar_path):
         """
         Untar a tar file
 
@@ -249,9 +242,13 @@ class Installer(object):
         tar_path = Path(tar_path).absolute()
         tar_extract_dir = tar_path.parent
 
-        tar = tarfile.open(tar_path)
-        tar.extractall(path=tar_extract_dir)
-        tar.close()
+        try:
+            tar = tarfile.open(tar_path)
+            tar.extractall(path=tar_extract_dir)
+            tar.close()
+        except tarfile.ReadError:
+            # For some reason the tarfile couldn't be opened
+            self.run_subprocess(f'tar -xvf {tar_path} -C {tar_extract_dir}')
 
     @staticmethod
     def get_tar_dir(tar_path):
@@ -294,13 +291,26 @@ class Installer(object):
 
         config_str = f'./configure{options}'
 
-        result = subprocess.run(config_str.split(),
+        self.run_subprocess(config_str)
+
+    def run_subprocess(self, command):
+        """
+        Runs the command as a subprocess
+
+        Terminates the process if an error has occured
+
+        Parameters
+        ----------
+        command : str
+            The command to run
+        """
+        result = subprocess.run(command.split(),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
         os.chdir(self.cwd)
         if result.returncode != 0:
-            self._spawn_subprocess(result)
+            self._raise_subprocess_error(result)
 
     def make(self, path):
         """
@@ -385,7 +395,7 @@ class Installer(object):
         else:
             self.logger.info(f'{file_from_make} found, skipping making')
 
-    def _spawn_subprocess(self, result):
+    def _raise_subprocess_error(self, result):
         """
         Raises errors from the subprocess in a clean way
 
