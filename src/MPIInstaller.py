@@ -32,7 +32,7 @@ class MPIInstaller(Installer):
         self.mpi_version = self.config['versions']['mpi']
         self.mpi_url = (f'http://www.mpich.org/static/downloads/'
                         f'{self.mpi_version}/mpich-{self.mpi_version}.tar.gz')
-        self.file_from_make = self.local_dir.joinpath('bin', 'mpi-cxx')
+        self.file_from_make = self.local_dir.joinpath('bin', 'mpicxx')
 
     def install(self):
         """
