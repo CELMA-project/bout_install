@@ -110,7 +110,7 @@ class TestInstall(unittest.TestCase):
         self.installer.get_tar_file(url=self.fftw_url)
         self.installer.untar(tar_file_path)
         config_options = dict(prefix=str(self.installer.local_dir))
-        self.installer.configure(tar_dir, config_options=config_options)
+        self.installer.get_configure_command(config_options=config_options)
         self.assertTrue(tar_dir.joinpath('config.log').is_file())
 
     def test_make(self):
@@ -126,7 +126,7 @@ class TestInstall(unittest.TestCase):
         self.installer.get_tar_file(url=self.fftw_url)
         self.installer.untar(tar_file_path)
         config_options = dict(prefix=str(self.installer.local_dir))
-        self.installer.configure(tar_dir, config_options=config_options)
+        self.installer.get_configure_command(config_options=config_options)
         self.installer.make(tar_dir)
         bin_file = self.installer.local_dir.joinpath('bin', 'fftw-wisdom')
         self.assertTrue(bin_file.is_file())

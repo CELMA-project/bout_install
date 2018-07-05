@@ -17,7 +17,7 @@ class FftwInstaller(Installer):
         Parameters
         ----------
         config_path : Path or str
-            The path to the configure file
+            The path to the get_configure_command file
         log_path : None or Path or str
             Path to the log file containing the log of Installer.
             If None, the log will directed to stderr

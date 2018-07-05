@@ -42,7 +42,7 @@ class Installer(object):
         Parameters
         ----------
         config_path : Path or str
-            The path to the configure file
+            The path to the get_configure_command file
         log_path : None or Path or str
             Path to the log file containing the log of Installer.
             If None, the log will directed to stderr
@@ -107,6 +107,9 @@ class Installer(object):
 
         # Declare other class variables
         self.logger = None
+        self.tar_file_path = None
+        self.tar_dir = None
+        self.config_log_path = None
 
         # Setup the logger
         self._setup_logger()
@@ -265,30 +268,47 @@ class Installer(object):
         tar_dir = Path(tar_path).absolute().with_suffix('').with_suffix('')
         return tar_dir
 
-    def configure(self, path, config_options=None):
+    @staticmethod
+    def get_configure_command(config_options=None):
         """
-        Configure the package
+        Get the command to configure the package
 
         Parameters
         ----------
-        path : Path or str
-            Path to the config file
         config_options : dict
-            Configuration options to use with `./configure`
+            Configuration options to use with `./configure`.
             The configuration options will be converted to `--key=val` during
             runtime
-        """
 
-        os.chdir(path)
+        Returns
+        -------
+        config_str : str
+            The configuration command
+        """
 
         options = ''
         if config_options is not None:
             for key, val in config_options.items():
                 options += f' --{key}={val}'
 
-        config_str = f'./configure{options}'
+        config_str = f'./get_configure_command{options}'
+        return config_str
 
-        result = subprocess.run(config_str.split(),
+    def run_subprocess(self, command, path):
+        """
+        Run a subprocess
+
+        Parameters
+        ----------
+        command : str
+            The command to run
+        path : Path or str
+            Path to the location to run the command from
+        """
+
+        os.chdir(path)
+
+        result = subprocess.run(command.split(),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
@@ -303,28 +323,107 @@ class Installer(object):
         Parameters
         ----------
         path : Path or str
-            Path to the configure file
+            Path to the get_configure_command file
         """
 
-        os.chdir(path)
-
         make_str = 'make'
-
-        result = subprocess.run(make_str.split(),
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-
-        result.check_returncode()
+        self.run_subprocess(make_str, path)
 
         make_install_str = 'make install'
+        self.run_subprocess(make_install_str, path)
 
-        result = subprocess.run(make_install_str.split(),
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+    def run_download_tar(self, url, tar_file_path, overwrite_on_exist):
+        """
+        Downloads the tar-file if not found
 
-        result.check_returncode()
+        Parameters
+        ----------
+        url : str
+            The url to download the tar-file from
+        tar_file_path : Path
+            Path to the tar file
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
 
-        os.chdir(self.cwd)
+        if not self.tar_file_path.is_file() or overwrite_on_exist:
+            self.logger.info(f'Downloading {url}')
+            self.get_tar_file(url)
+        else:
+            self.logger.info(f'{tar_file_path} found, skipping download')
+
+    def run_untar(self, tar_file_path, tar_dir, overwrite_on_exist):
+        """
+        Untars the tar file
+
+        Parameters
+        ----------
+        tar_file_path : Path
+            Path to the tar file
+        tar_dir : Path
+            Directory to the tar file
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
+
+        if not self.tar_dir.is_dir() or overwrite_on_exist:
+            self.logger.info(f'Untarring {tar_file_path}')
+            self.untar(tar_file_path)
+        else:
+            self.logger.info(f'{tar_dir} found, skipping untarring')
+
+    def run_configure(self,
+                      tar_dir,
+                      config_log_path,
+                      extra_config_option,
+                      overwrite_on_exist):
+        """
+        Configures the package
+
+        Parameters
+        ----------
+        tar_dir : Path
+            Directory of the tar file
+        config_log_path : Path
+            Path to config.log
+        extra_config_option:
+            Configure option to include.
+            --prefix=self.local_dir is already added as an option
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
+
+        if not config_log_path.is_file() or overwrite_on_exist:
+            config_options = dict(prefix=str(self.local_dir))
+            if extra_config_option is not None:
+                config_options = {**config_options, **extra_config_option}
+            self.logger.info(f'Configuring with options {config_options}')
+            config_str = \
+                self.get_configure_command(config_options=config_options)
+            self.run_subprocess(config_str, tar_dir)
+        else:
+            self.logger.info(f'{config_log_path} found, skipping configuring')
+
+    def run_make(self, tar_dir, file_from_make, overwrite_on_exist):
+        """
+        Runs make and make install
+
+        Parameters
+        ----------
+        tar_dir : Path
+            Directory of the tar file
+        file_from_make : Path or str
+            File originating from the make processes (used to check if the
+            package has been made)
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
+
+        if not file_from_make.is_file() or overwrite_on_exist:
+            self.logger.info(f'Making (including make install)')
+            self.make(tar_dir)
+        else:
+            self.logger.info(f'{file_from_make} found, skipping making')
 
     def install_package(self,
                         url,
@@ -352,32 +451,13 @@ class Installer(object):
         tar_dir = self.get_tar_dir(tar_file_path)
         config_log_path = tar_dir.joinpath('config.log')
 
-        if not tar_file_path.is_file() or overwrite_on_exist:
-            self.logger.info(f'Downloading {tar_file_path}')
-            self.get_tar_file(url)
-        else:
-            self.logger.info(f'{tar_file_path} found, skipping download')
-
-        if not tar_dir.is_dir() or overwrite_on_exist:
-            self.logger.info(f'Untarring {tar_file_path}')
-            self.untar(tar_file_path)
-        else:
-            self.logger.info(f'{tar_dir} found, skipping untarring')
-
-        if not config_log_path.is_file() or overwrite_on_exist:
-            config_options = dict(prefix=str(self.local_dir))
-            if extra_config_option is not None:
-                config_options = {**config_options, **extra_config_option}
-            self.logger.info(f'Configuring with options {config_options}')
-            self.configure(tar_dir, config_options=config_options)
-        else:
-            self.logger.info(f'{config_log_path} found, skipping configuring')
-
-        if not file_from_make.is_file() or overwrite_on_exist:
-            self.logger.info(f'Making (including make install)')
-            self.make(tar_dir)
-        else:
-            self.logger.info(f'{file_from_make} found, skipping making')
+        self.run_download_tar(url, tar_file_path, overwrite_on_exist)
+        self.run_untar(tar_file_path, tar_dir, overwrite_on_exist)
+        self.run_configure(tar_dir,
+                           config_log_path,
+                           extra_config_option,
+                           overwrite_on_exist)
+        self.run_make(tar_dir, file_from_make, overwrite_on_exist)
 
     def _raise_subprocess_error(self, result):
         """
