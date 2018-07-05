@@ -44,7 +44,7 @@ class HDF5Installer(Installer):
         Installs the HDF5 package
         """
 
-        self.logger.info('Installing hdf5')
+        self.logger.info('Installing HDF5')
         self.install_package(url=self.hdf5_url,
                              file_from_make=self.file_from_make,
                              overwrite_on_exist=self.overwrite_on_exist,

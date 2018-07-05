@@ -76,7 +76,6 @@ class Installer(object):
                                 examples_dir=self.examples_dir)
 
         # Set the versions
-        self.gcc_version = self.config['versions']['gcc']
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
         self.netcdf_version = self.config['versions']['netcdf']
@@ -88,8 +87,6 @@ class Installer(object):
         self.ffmpeg_version = self.config['versions']['ffmpeg']
 
         # Set the urls
-        self.gcc_url = (f'ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/'
-                        f'gcc-{self.gcc_version}/gcc-{self.gcc_version}.tar.gz')
         self.cmake_url = (f'http://cmake.org/files/'
                           f'v{cmake_major_minor_version}/'
                           f'cmake-{self.cmake_version}.tar.gz')
@@ -356,28 +353,28 @@ class Installer(object):
         config_log_path = tar_dir.joinpath('config.log')
 
         if not tar_file_path.is_file() or overwrite_on_exist:
-            self.logger.info(f'{tar_file_path} not found, downloading')
+            self.logger.info(f'Downloading {tar_file_path}')
             self.get_tar_file(url)
         else:
             self.logger.info(f'{tar_file_path} found, skipping download')
 
         if not tar_dir.is_dir() or overwrite_on_exist:
-            self.logger.info(f'{tar_dir} not found, untarring')
+            self.logger.info(f'Untarring {tar_file_path}')
             self.untar(tar_file_path)
         else:
             self.logger.info(f'{tar_dir} found, skipping untarring')
 
         if not config_log_path.is_file() or overwrite_on_exist:
-            self.logger.info(f'{config_log_path} not found, configuring')
             config_options = dict(prefix=str(self.local_dir))
             if extra_config_option is not None:
                 config_options = {**config_options, **extra_config_option}
+            self.logger.info(f'Configuring with options {config_options}')
             self.configure(tar_dir, config_options=config_options)
         else:
-            self.logger.info(f'{tar_dir} found, skipping untarring')
+            self.logger.info(f'{config_log_path} found, skipping configuring')
 
         if not file_from_make.is_file() or overwrite_on_exist:
-            self.logger.info(f'{file_from_make} not found, running make')
+            self.logger.info(f'Making (including make install)')
             self.make(tar_dir)
         else:
             self.logger.info(f'{file_from_make} found, skipping making')
