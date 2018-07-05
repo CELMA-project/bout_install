@@ -106,9 +106,6 @@ class Installer(object):
                            f'ffmpeg-{self.ffmpeg_version}.tar.bz2')
 
         # Declare other class variables
-        self.logger = None
-        self.tar_file_path = None
-        self.tar_dir = None
         self.config_log_path = None
 
         # Setup the logger
@@ -291,7 +288,7 @@ class Installer(object):
             for key, val in config_options.items():
                 options += f' --{key}={val}'
 
-        config_str = f'./get_configure_command{options}'
+        config_str = f'./configure{options}'
         return config_str
 
     def run_subprocess(self, command, path):
@@ -346,7 +343,7 @@ class Installer(object):
             Whether to overwrite the package if it is already found
         """
 
-        if not self.tar_file_path.is_file() or overwrite_on_exist:
+        if not tar_file_path.is_file() or overwrite_on_exist:
             self.logger.info(f'Downloading {url}')
             self.get_tar_file(url)
         else:
@@ -366,7 +363,7 @@ class Installer(object):
             Whether to overwrite the package if it is already found
         """
 
-        if not self.tar_dir.is_dir() or overwrite_on_exist:
+        if not tar_dir.is_dir() or overwrite_on_exist:
             self.logger.info(f'Untarring {tar_file_path}')
             self.untar(tar_file_path)
         else:
