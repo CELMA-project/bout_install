@@ -9,7 +9,7 @@ class MPIInstaller(Installer):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=None,
+                 log_path=Path(__file__).parents[1].joinpath('log', 'mpi.log'),
                  overwrite_on_exist=False):
         """
         Gets the MPI version, sets the MPI url and calls the super constructor
@@ -39,6 +39,8 @@ class MPIInstaller(Installer):
         Installs the MPI package
         """
 
+        self.logger.info('Installing MPI')
         self.install_package(url=self.mpi_url,
                              file_from_make=self.file_from_make,
                              overwrite_on_exist=self.overwrite_on_exist)
+        self.logger.info('Installation completed successfully')

@@ -9,7 +9,7 @@ class FftwInstaller(Installer):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=None,
+                 log_path=Path(__file__).parents[1].joinpath('log', 'fftw.log'),
                  overwrite_on_exist=False):
         """
         Gets the fftw version, sets the fftw url and calls the super constructor
@@ -35,9 +35,11 @@ class FftwInstaller(Installer):
 
     def install(self):
         """
-        Installs the fftw package
+        Installs the FFTW package
         """
 
+        self.logger.info('Installing FFTW')
         self.install_package(url=self.fftw_url,
                              file_from_make=self.file_from_make,
                              overwrite_on_exist=self.overwrite_on_exist)
+        self.logger.info('Installation completed successfully')

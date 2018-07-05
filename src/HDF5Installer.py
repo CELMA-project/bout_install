@@ -9,7 +9,7 @@ class HDF5Installer(Installer):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=None,
+                 log_path=Path(__file__).parents[1].joinpath('log', 'hdf5.log'),
                  overwrite_on_exist=False):
         """
         Gets the HDF5 version, sets the HDF5 url and calls the super constructor
@@ -44,7 +44,9 @@ class HDF5Installer(Installer):
         Installs the HDF5 package
         """
 
+        self.logger.info('Installing hdf5')
         self.install_package(url=self.hdf5_url,
                              file_from_make=self.file_from_make,
                              overwrite_on_exist=self.overwrite_on_exist,
                              extra_config_option=self.extra_config_options)
+        self.logger.info('Installation completed successfully')

@@ -20,7 +20,7 @@ class TestFftwInstaller(unittest.TestCase):
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = FftwInstaller(config_path=self.config)
+        self.installer = FftwInstaller(config_path=self.config, log_path=None)
 
     def tearDown(self):
         """

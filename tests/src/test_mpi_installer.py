@@ -20,7 +20,7 @@ class TestMPIInstaller(unittest.TestCase):
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = MPIInstaller(config_path=self.config)
+        self.installer = MPIInstaller(config_path=self.config, log_path=None)
 
     def tearDown(self):
         """
