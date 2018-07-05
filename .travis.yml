@@ -1,6 +1,4 @@
-dist: trusty
 language: python
-compiler: gcc
 
 python:
   - "3.6"
