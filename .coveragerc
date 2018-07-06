@@ -1,2 +1,11 @@
 [run]
 branch = true
+omit =
+    # The GCC installer takes too long time to run
+    src/GCCInstaller.py
+
+[report]
+omit =
+    # Ignore that GCC is missing as this will give 0% coverage for this file
+    src/GCCInstaller.py
+
