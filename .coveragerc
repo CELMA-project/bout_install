@@ -1,11 +1,14 @@
+# NOTE: Omitted test starts with a . as [run]omit= has no effect
+#       See https://github.com/pytest-dev/pytest-cov/issues/204
 [run]
-branch = true
-omit =
-    # The GCC installer takes too long time to run
-    src/GCCInstaller.py
+branch = True
+source = src/
 
 [report]
+exclude_lines =
+    if __name__ == .__main__.
 omit =
-    # Ignore that GCC is missing as this will give 0% coverage for this file
+    tests/*
+    # Takes too long time to build the GCC
     src/GCCInstaller.py
 
