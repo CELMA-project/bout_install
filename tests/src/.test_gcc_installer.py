@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.FftwInstaller import FftwInstaller
+from src.GCCInstaller import GCCInstaller
 from tests.utils import BaseTestSetup
 
 
-class TestFftwInstaller(unittest.TestCase):
+class TestGCCInstaller(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
@@ -14,13 +14,13 @@ class TestFftwInstaller(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.base_setup = BaseTestSetup('fftw')
+        self.base_setup = BaseTestSetup('gcc')
         self.base_setup.set_up()
 
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = FftwInstaller(config_path=self.config, log_path=None)
+        self.installer = GCCInstaller(config_path=self.config, log_path=None)
 
     def tearDown(self):
         """
@@ -29,9 +29,9 @@ class TestFftwInstaller(unittest.TestCase):
 
         self.base_setup.tear_down()
 
-    def test_fftw(self):
+    def test_gcc(self):
         """
-        Test that fftw gets installed
+        Test that GCC gets installed
         """
 
         self.installer.install()

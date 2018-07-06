@@ -24,7 +24,7 @@ class Installer(object):
         * PETSc
         * BOUT++
         * ffpmeg
-        
+
     Examples
     --------
     FIXME
@@ -42,7 +42,7 @@ class Installer(object):
         Parameters
         ----------
         config_path : Path or str
-            The path to the configure file
+            The path to the get_configure_command file
         log_path : None or Path or str
             Path to the log file containing the log of Installer.
             If None, the log will directed to stderr
@@ -76,12 +76,8 @@ class Installer(object):
                                 examples_dir=self.examples_dir)
 
         # Set the versions
-        self.gcc_version = self.config['versions']['gcc']
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-        self.mpi_version = self.config['versions']['mpi']
-        self.hdf5_version = self.config['versions']['hdf5']
-        hdf5_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
         self.netcdf_version = self.config['versions']['netcdf']
         self.netcdf_cxx_version = self.config['versions']['netcdf_cxx']
         self.slepc_version = self.config['versions']['slepc']
@@ -91,17 +87,9 @@ class Installer(object):
         self.ffmpeg_version = self.config['versions']['ffmpeg']
 
         # Set the urls
-        self.gcc_url = (f'ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/'
-                        f'gcc-{self.gcc_version}/gcc-{self.gcc_version}.tar.gz')
         self.cmake_url = (f'http://cmake.org/files/'
                           f'v{cmake_major_minor_version}/'
                           f'cmake-{self.cmake_version}.tar.gz')
-        self.mpi_url = (f'http://www.mpich.org/static/downloads/'
-                        f'{self.mpi_version}/mpich-{self.mpi_version}.tar.gz')
-        self.hdf5_url = (f'wget https://support.hdfgroup.org/ftp/HDF5/releases/'
-                         f'hdf5-{hdf5_major_minor_version}/'
-                         f'hdf5-{self.hdf5_version}/src/'
-                         f'hdf5-{self.hdf5_version}.tar.gz')
         self.netcdf_cxx_url = (f'http://github.com/Unidata/netcdf-cxx4/archive/'
                                f'v{self.netcdf_cxx_version}.tar.gz')
         self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
@@ -109,7 +97,7 @@ class Installer(object):
         self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
                           f'petsc-{self.petsc_version}.tar.gz')
         self.bout_url = (f'')
-        self.nasm_url = (f'http://www.nasm.us/pub/nasm/releasebuilds/' 
+        self.nasm_url = (f'http://www.nasm.us/pub/nasm/releasebuilds/'
                          f'{self.nasm_version}/'
                          f'nasm-{self.nasm_version}.tar.gz')
         self.yasm_url = (f'http://www.tortall.net/projects/yasm/releases/yasm-'
@@ -118,7 +106,7 @@ class Installer(object):
                            f'ffmpeg-{self.ffmpeg_version}.tar.bz2')
 
         # Declare other class variables
-        self.logger = None
+        self.config_log_path = None
 
         # Setup the logger
         self._setup_logger()
@@ -216,6 +204,9 @@ class Installer(object):
         tar_file_path = self.get_tar_file_path(url)
 
         with tar_file_path.open('wb') as f:
+            # Decode in case transport encoding was applied
+            # https://stackoverflow.com/questions/32463419/having-trouble-getting-requests-2-7-0-to-automatically-decompress-gzip
+            response.raw.decode_content = True
             shutil.copyfileobj(response.raw, f)
 
     def get_tar_file_path(self, url):
@@ -274,21 +265,23 @@ class Installer(object):
         tar_dir = Path(tar_path).absolute().with_suffix('').with_suffix('')
         return tar_dir
 
-    def configure(self, path, config_options=None):
+    @staticmethod
+    def get_configure_command(config_options=None):
         """
-        Configure the package
+        Get the command to configure the package
 
         Parameters
         ----------
-        path : Path or str
-            Path to the config file
         config_options : dict
-            Configuration options to use with `./configure`
+            Configuration options to use with `./configure`.
             The configuration options will be converted to `--key=val` during
             runtime
-        """
 
-        os.chdir(path)
+        Returns
+        -------
+        config_str : str
+            The configuration command
+        """
 
         options = ''
         if config_options is not None:
@@ -296,14 +289,29 @@ class Installer(object):
                 options += f' --{key}={val}'
 
         config_str = f'./configure{options}'
+        return config_str
 
-        result = subprocess.run(config_str.split(),
+    def run_subprocess(self, command, path):
+        """
+        Run a subprocess
+
+        Parameters
+        ----------
+        command : str
+            The command to run
+        path : Path or str
+            Path to the location to run the command from
+        """
+
+        os.chdir(path)
+
+        result = subprocess.run(command.split(),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
         os.chdir(self.cwd)
         if result.returncode != 0:
-            self._spawn_subprocess(result)
+            self._raise_subprocess_error(result)
 
     def make(self, path):
         """
@@ -312,28 +320,107 @@ class Installer(object):
         Parameters
         ----------
         path : Path or str
-            Path to the configure file
+            Path to the get_configure_command file
         """
 
-        os.chdir(path)
-
         make_str = 'make'
-
-        result = subprocess.run(make_str.split(),
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-
-        result.check_returncode()
+        self.run_subprocess(make_str, path)
 
         make_install_str = 'make install'
+        self.run_subprocess(make_install_str, path)
 
-        result = subprocess.run(make_install_str.split(),
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+    def run_download_tar(self, url, tar_file_path, overwrite_on_exist):
+        """
+        Downloads the tar-file if not found
 
-        result.check_returncode()
+        Parameters
+        ----------
+        url : str
+            The url to download the tar-file from
+        tar_file_path : Path
+            Path to the tar file
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
 
-        os.chdir(self.cwd)
+        if not tar_file_path.is_file() or overwrite_on_exist:
+            self.logger.info(f'Downloading {url}')
+            self.get_tar_file(url)
+        else:
+            self.logger.info(f'{tar_file_path} found, skipping download')
+
+    def run_untar(self, tar_file_path, tar_dir, overwrite_on_exist):
+        """
+        Untars the tar file
+
+        Parameters
+        ----------
+        tar_file_path : Path
+            Path to the tar file
+        tar_dir : Path
+            Directory to the tar file
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
+
+        if not tar_dir.is_dir() or overwrite_on_exist:
+            self.logger.info(f'Untarring {tar_file_path}')
+            self.untar(tar_file_path)
+        else:
+            self.logger.info(f'{tar_dir} found, skipping untarring')
+
+    def run_configure(self,
+                      tar_dir,
+                      config_log_path,
+                      extra_config_option,
+                      overwrite_on_exist):
+        """
+        Configures the package
+
+        Parameters
+        ----------
+        tar_dir : Path
+            Directory of the tar file
+        config_log_path : Path
+            Path to config.log
+        extra_config_option:
+            Configure option to include.
+            --prefix=self.local_dir is already added as an option
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
+
+        if not config_log_path.is_file() or overwrite_on_exist:
+            config_options = dict(prefix=str(self.local_dir))
+            if extra_config_option is not None:
+                config_options = {**config_options, **extra_config_option}
+            self.logger.info(f'Configuring with options {config_options}')
+            config_str = \
+                self.get_configure_command(config_options=config_options)
+            self.run_subprocess(config_str, tar_dir)
+        else:
+            self.logger.info(f'{config_log_path} found, skipping configuring')
+
+    def run_make(self, tar_dir, file_from_make, overwrite_on_exist):
+        """
+        Runs make and make install
+
+        Parameters
+        ----------
+        tar_dir : Path
+            Directory of the tar file
+        file_from_make : Path or str
+            File originating from the make processes (used to check if the
+            package has been made)
+        overwrite_on_exist : bool
+            Whether to overwrite the package if it is already found
+        """
+
+        if not file_from_make.is_file() or overwrite_on_exist:
+            self.logger.info(f'Making (including make install)')
+            self.make(tar_dir)
+        else:
+            self.logger.info(f'{file_from_make} found, skipping making')
 
     def install_package(self,
                         url,
@@ -361,34 +448,15 @@ class Installer(object):
         tar_dir = self.get_tar_dir(tar_file_path)
         config_log_path = tar_dir.joinpath('config.log')
 
-        if not tar_file_path.is_file() or overwrite_on_exist:
-            self.logger.info(f'{tar_file_path} not found, downloading')
-            self.get_tar_file(url)
-        else:
-            self.logger.info(f'{tar_file_path} found, skipping download')
+        self.run_download_tar(url, tar_file_path, overwrite_on_exist)
+        self.run_untar(tar_file_path, tar_dir, overwrite_on_exist)
+        self.run_configure(tar_dir,
+                           config_log_path,
+                           extra_config_option,
+                           overwrite_on_exist)
+        self.run_make(tar_dir, file_from_make, overwrite_on_exist)
 
-        if not tar_dir.is_dir() or overwrite_on_exist:
-            self.logger.info(f'{tar_dir} not found, untarring')
-            self.untar(tar_file_path)
-        else:
-            self.logger.info(f'{tar_dir} found, skipping untarring')
-
-        if not config_log_path.is_file() or overwrite_on_exist:
-            self.logger.info(f'{config_log_path} not found, configuring')
-            config_options = dict(prefix=str(self.local_dir))
-            if extra_config_option is not None:
-                config_options = {**config_options, **extra_config_option}
-            self.configure(tar_dir, config_options=config_options)
-        else:
-            self.logger.info(f'{tar_dir} found, skipping untarring')
-
-        if not file_from_make.is_file() or overwrite_on_exist:
-            self.logger.info(f'{file_from_make} not found, running make')
-            self.make(tar_dir)
-        else:
-            self.logger.info(f'{file_from_make} found, skipping making')
-
-    def _spawn_subprocess(self, result):
+    def _raise_subprocess_error(self, result):
         """
         Raises errors from the subprocess in a clean way
 
@@ -407,6 +475,8 @@ class Installer(object):
 
 # FIXME: Multiprocess: One process kills all on error, and error is logged
 # FIXME: x264 from git (needed for ffmpeg)
+# FIXME: Add stuff to bashrc or bash_profile
+# FIXME: Bash stuff portable?
 # FIXME: BOUT++ from git
 # FIXME: netcdf depends on hdf5
 # FIXME: prepend wget --no-check-certificate to cmake

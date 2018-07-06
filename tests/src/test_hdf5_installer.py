@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.FftwInstaller import FftwInstaller
+from src.HDF5Installer import HDF5Installer
 from tests.utils import BaseTestSetup
 
 
-class TestFftwInstaller(unittest.TestCase):
+class TestHDF5Installer(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
@@ -14,13 +14,13 @@ class TestFftwInstaller(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.base_setup = BaseTestSetup('fftw')
+        self.base_setup = BaseTestSetup('hdf5')
         self.base_setup.set_up()
 
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = FftwInstaller(config_path=self.config, log_path=None)
+        self.installer = HDF5Installer(config_path=self.config, log_path=None)
 
     def tearDown(self):
         """
@@ -29,9 +29,9 @@ class TestFftwInstaller(unittest.TestCase):
 
         self.base_setup.tear_down()
 
-    def test_fftw(self):
+    def test_hdf5(self):
         """
-        Test that fftw gets installed
+        Test that HDF5 gets installed
         """
 
         self.installer.install()

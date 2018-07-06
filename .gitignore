@@ -101,6 +101,11 @@ ENV/
 .mypy_cache/
 
 # Misc
+.pytest_cache/
 .idea
 .DS_Store
+local/
+install/
+examples/
+*.swp
 

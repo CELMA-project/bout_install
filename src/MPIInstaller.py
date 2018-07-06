@@ -2,17 +2,17 @@ from pathlib import Path
 from src.Installer import Installer
 
 
-class FftwInstaller(Installer):
+class MPIInstaller(Installer):
     """
-    Installer object for installing fftw
+    Installer object for installing MPI
     """
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=Path(__file__).parents[1].joinpath('log', 'fftw.log'),
+                 log_path=Path(__file__).parents[1].joinpath('log', 'mpi.log'),
                  overwrite_on_exist=False):
         """
-        Gets the fftw version, sets the fftw url and calls the super constructor
+        Gets the MPI version, sets the MPI url and calls the super constructor
 
         Parameters
         ----------
@@ -29,17 +29,18 @@ class FftwInstaller(Installer):
 
         super().__init__(config_path=config_path, log_path=log_path)
 
-        self.fftw_version = self.config['versions']['fftw']
-        self.fftw_url = f'http://www.fftw.org/fftw-{self.fftw_version}.tar.gz'
-        self.file_from_make = self.local_dir.joinpath('bin', 'fftw-wisdom')
+        self.mpi_version = self.config['versions']['mpi']
+        self.mpi_url = (f'http://www.mpich.org/static/downloads/'
+                        f'{self.mpi_version}/mpich-{self.mpi_version}.tar.gz')
+        self.file_from_make = self.local_dir.joinpath('bin', 'mpicxx')
 
     def install(self):
         """
-        Installs the FFTW package
+        Installs the MPI package
         """
 
-        self.logger.info('Installing FFTW')
-        self.install_package(url=self.fftw_url,
+        self.logger.info('Installing MPI')
+        self.install_package(url=self.mpi_url,
                              file_from_make=self.file_from_make,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
