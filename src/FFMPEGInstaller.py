@@ -207,8 +207,8 @@ class X264Installer(Installer):
         self.extra_config_options = \
             {'enable-static': None,
              'enable-shared': None,
-             'extra-ldflags': f'L{self.local_dir.joinpath("lib")}',
-             'extra-cflags': f'I{self.local_dir.joinpath("include")}'}
+             'extra-ldflags': f'-L{self.local_dir.joinpath("lib")}',
+             'extra-cflags': f'-I{self.local_dir.joinpath("include")}'}
 
     def install(self):
         """
