@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.FftwInstaller import FftwInstaller
+from src.FFTWInstaller import FftwInstaller
 from tests.utils import BaseTestSetup
 
 
-class TestFftwInstaller(unittest.TestCase):
+class TestFFTWInstaller(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
