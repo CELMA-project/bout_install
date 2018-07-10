@@ -75,6 +75,18 @@ class Installer(object):
                                 local_dir=self.local_dir,
                                 examples_dir=self.examples_dir)
 
+        # Set the environment variables
+        # Set the local path first
+        os.environ['PATH'] = (f'{self.local_dir.joinpath("bin")}'
+                              f'{os.pathsep}'
+                              f'{os.environ["PATH"]}')
+        if 'LD_LIBRARY_PATH' not in os.environ:
+            os.environ['LD_LIBRARY_PATH'] = f'{self.local_dir.joinpath("lib")}'
+        else:
+            os.environ['LD_LIBRARY_PATH'] = (f'{self.local_dir.joinpath("lib")}'
+                                             f'{os.pathsep}'
+                                             f'{os.environ["LD_LIBRARY_PATH"]}')
+
         # Set the versions
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
@@ -82,9 +94,7 @@ class Installer(object):
         self.netcdf_cxx_version = self.config['versions']['netcdf_cxx']
         self.slepc_version = self.config['versions']['slepc']
         self.petsc_version = self.config['versions']['petsc']
-        self.nasm_version = self.config['versions']['nasm']
-        self.yasm_version = self.config['versions']['yasm']
-        self.ffmpeg_version = self.config['versions']['ffmpeg']
+
 
         # Set the urls
         self.cmake_url = (f'http://cmake.org/files/'
@@ -97,13 +107,6 @@ class Installer(object):
         self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
                           f'petsc-{self.petsc_version}.tar.gz')
         self.bout_url = (f'')
-        self.nasm_url = (f'http://www.nasm.us/pub/nasm/releasebuilds/'
-                         f'{self.nasm_version}/'
-                         f'nasm-{self.nasm_version}.tar.gz')
-        self.yasm_url = (f'http://www.tortall.net/projects/yasm/releases/yasm-'
-                         f'{self.yasm_version}.tar.gz')
-        self.ffmpeg_url = (f'http://ffmpeg.org/releases/'
-                           f'ffmpeg-{self.ffmpeg_version}.tar.bz2')
 
         # Declare other class variables
         self.config_log_path = None
@@ -286,7 +289,10 @@ class Installer(object):
         options = ''
         if config_options is not None:
             for key, val in config_options.items():
-                options += f' --{key}={val}'
+                if val is not None:
+                    options += f' --{key}={val}'
+                else:
+                    options += f' --{key}'
 
         config_str = f'./configure{options}'
         return config_str
