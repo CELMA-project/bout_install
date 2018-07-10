@@ -2,9 +2,9 @@ from pathlib import Path
 from src.Installer import Installer
 
 
-class FftwInstaller(Installer):
+class FFTWInstaller(Installer):
     """
-    Installer object for installing fftw
+    Installer object for installing FFTW
     """
 
     def __init__(self,
@@ -12,7 +12,7 @@ class FftwInstaller(Installer):
                  log_path=Path(__file__).parents[1].joinpath('log', 'fftw.log'),
                  overwrite_on_exist=False):
         """
-        Gets the fftw version, sets the fftw url and calls the super constructor
+        Gets the FFTW version, sets the FFTW url and calls the super constructor
 
         Parameters
         ----------

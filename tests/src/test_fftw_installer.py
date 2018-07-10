@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.FFTWInstaller import FftwInstaller
+from src.FFTWInstaller import FFTWInstaller
 from tests.utils import BaseTestSetup
 
 
@@ -20,7 +20,7 @@ class TestFFTWInstaller(unittest.TestCase):
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = FftwInstaller(config_path=self.config, log_path=None)
+        self.installer = FFTWInstaller(config_path=self.config, log_path=None)
 
     def tearDown(self):
         """
