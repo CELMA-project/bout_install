@@ -38,9 +38,9 @@ class FFMPEGInstaller(Installer):
         super().__init__(config_path=config_path, log_path=ffmpeg_log_path)
 
         self.ffmpeg_version = self.config['versions']['ffmpeg']
-        self.ffmpeg_url = (f'http://www.ffmpeg.org/ffmpeg-'
+        self.ffmpeg_url = (f'http://www.ffmpeg.org/releases/ffmpeg-'
                            f'{self.ffmpeg_version}.tar.gz')
-        self.file_from_make = self.local_dir.joinpath('bin', 'ffmpeg-wisdom')
+        self.file_from_make = self.local_dir.joinpath('bin', 'ffmpeg')
 
         # Create dependency installers
         self.nasm = \
@@ -53,8 +53,8 @@ class FFMPEGInstaller(Installer):
         self.extra_config_options = \
             {'enable-gpl': None,
              'enable-libx264': None,
-             'extra-ldflags': f'L{self.local_dir.joinpath("lib")}',
-             'extra-cflags': f'I{self.local_dir.joinpath("include")}'}
+             'extra-ldflags': f'-L{self.local_dir.joinpath("lib")}',
+             'extra-cflags': f'-I{self.local_dir.joinpath("include")}'}
 
     def install(self):
         """
@@ -204,11 +204,8 @@ class X264Installer(Installer):
 
         self.file_from_make = self.local_dir.joinpath('bin', 'x264')
 
-        self.extra_config_options = \
-            {'enable-static': None,
-             'enable-shared': None,
-             'extra-ldflags': f'-L{self.local_dir.joinpath("lib")}',
-             'extra-cflags': f'-I{self.local_dir.joinpath("include")}'}
+        self.extra_config_options = {'enable-static': None,
+                                     'enable-shared': None}
 
     def install(self):
         """

@@ -75,6 +75,18 @@ class Installer(object):
                                 local_dir=self.local_dir,
                                 examples_dir=self.examples_dir)
 
+        # Set the environment variables
+        # Set the local path first
+        os.environ['PATH'] = (f'{self.local_dir.joinpath("bin")}'
+                              f'{os.pathsep}'
+                              f'{os.environ["PATH"]}')
+        if 'LD_LIBRARY_PATH' not in os.environ:
+            os.environ['LD_LIBRARY_PATH'] = f'{self.local_dir.joinpath("lib")}'
+        else:
+            os.environ['LD_LIBRARY_PATH'] = (f'{self.local_dir.joinpath("lib")}'
+                                             f'{os.pathsep}'
+                                             f'{os.environ["LD_LIBRARY_PATH"]}')
+
         # Set the versions
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
