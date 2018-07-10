@@ -47,6 +47,6 @@ class HDF5Installer(Installer):
         self.logger.info('Installing HDF5')
         self.install_package(url=self.hdf5_url,
                              file_from_make=self.file_from_make,
-                             overwrite_on_exist=self.overwrite_on_exist,
-                             extra_config_option=self.extra_config_options)
+                             extra_config_option=self.extra_config_options,
+                             overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
