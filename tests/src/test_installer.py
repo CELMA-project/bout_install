@@ -91,10 +91,11 @@ class TestInstall(unittest.TestCase):
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         tar_file_path = \
             self.installer.get_tar_file_path(url=self.fftw_url)
-        tar_dir = self.installer.get_tar_dir(tar_file_path)
 
         self.installer.get_tar_file(url=self.fftw_url)
         self.installer.untar(tar_file_path)
+
+        tar_dir = self.installer.get_tar_dir(tar_file_path)
         self.assertTrue(tar_dir.is_dir())
 
     def test_configure(self):
@@ -105,13 +106,15 @@ class TestInstall(unittest.TestCase):
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         tar_file_path = \
             self.installer.get_tar_file_path(url=self.fftw_url)
-        tar_dir = self.installer.get_tar_dir(tar_file_path)
-
         self.installer.get_tar_file(url=self.fftw_url)
+
         self.installer.untar(tar_file_path)
+
         config_options = dict(prefix=str(self.installer.local_dir))
         config_str = \
             self.installer.get_configure_command(config_options=config_options)
+
+        tar_dir = self.installer.get_tar_dir(tar_file_path)
         self.installer.run_subprocess(config_str, tar_dir)
         self.assertTrue(tar_dir.joinpath('config.log').is_file())
 
@@ -123,13 +126,15 @@ class TestInstall(unittest.TestCase):
         self.installer.setup_install_dirs(main_dir=self.main_dir)
         tar_file_path = \
             self.installer.get_tar_file_path(url=self.fftw_url)
-        tar_dir = self.installer.get_tar_dir(tar_file_path)
 
         self.installer.get_tar_file(url=self.fftw_url)
         self.installer.untar(tar_file_path)
+
         config_options = dict(prefix=str(self.installer.local_dir))
         config_str = \
             self.installer.get_configure_command(config_options=config_options)
+
+        tar_dir = self.installer.get_tar_dir(tar_file_path)
         self.installer.run_subprocess(config_str, tar_dir)
         self.installer.make(tar_dir)
         bin_file = self.installer.local_dir.joinpath('bin', 'fftw-wisdom')
