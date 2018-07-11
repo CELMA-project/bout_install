@@ -448,12 +448,16 @@ class Installer(object):
             --prefix=self.local_dir is already added as an option
         """
 
+        # Download the tar file
         tar_file_path = self.get_tar_file_path(url)
-        tar_dir = self.get_tar_dir(tar_file_path)
-        config_log_path = tar_dir.joinpath('config.log')
-
         self.run_download_tar(url, tar_file_path, overwrite_on_exist)
+
+        # Untar
+        tar_dir = self.get_tar_dir(tar_file_path)
         self.run_untar(tar_file_path, tar_dir, overwrite_on_exist)
+
+        # Configure and make
+        config_log_path = tar_dir.joinpath('config.log')
         self.run_configure(tar_dir,
                            config_log_path,
                            extra_config_option,
