@@ -90,18 +90,14 @@ class Installer(object):
         # Set the versions
         self.cmake_version = self.config['versions']['cmake']
         cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-        self.netcdf_version = self.config['versions']['netcdf']
-        self.netcdf_cxx_version = self.config['versions']['netcdf_cxx']
+
         self.slepc_version = self.config['versions']['slepc']
         self.petsc_version = self.config['versions']['petsc']
-
 
         # Set the urls
         self.cmake_url = (f'http://cmake.org/files/'
                           f'v{cmake_major_minor_version}/'
                           f'cmake-{self.cmake_version}.tar.gz')
-        self.netcdf_cxx_url = (f'http://github.com/Unidata/netcdf-cxx4/archive/'
-                               f'v{self.netcdf_cxx_version}.tar.gz')
         self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
                           f'filename=slepc-{self.slepc_version}.tar.gz')
         self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
@@ -265,7 +261,9 @@ class Installer(object):
         tar_dir : Path
             The untarred directory
         """
-        tar_dir = Path(tar_path).absolute().with_suffix('').with_suffix('')
+
+        dir_name = Path(tarfile.open(tar_path).getnames()[0]).parts[0]
+        tar_dir = Path(tar_path).absolute().parent.joinpath(dir_name)
         return tar_dir
 
     @staticmethod
@@ -450,12 +448,16 @@ class Installer(object):
             --prefix=self.local_dir is already added as an option
         """
 
+        # Download the tar file
         tar_file_path = self.get_tar_file_path(url)
-        tar_dir = self.get_tar_dir(tar_file_path)
-        config_log_path = tar_dir.joinpath('config.log')
-
         self.run_download_tar(url, tar_file_path, overwrite_on_exist)
+
+        # Untar
+        tar_dir = self.get_tar_dir(tar_file_path)
         self.run_untar(tar_file_path, tar_dir, overwrite_on_exist)
+
+        # Configure and make
+        config_log_path = tar_dir.joinpath('config.log')
         self.run_configure(tar_dir,
                            config_log_path,
                            extra_config_option,

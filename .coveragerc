@@ -11,4 +11,6 @@ omit =
     tests/*
     # Takes too long time to build the GCC
     src/GCCInstaller.py
+    # HDF5 is tested in NetCDF installation
+    src/HDF5Installer.py
 
