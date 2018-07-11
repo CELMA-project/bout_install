@@ -19,15 +19,25 @@ class FFMPEGInstaller(Installer):
                     Path(__file__).parents[1].joinpath('log', 'x264.log'),
                  overwrite_on_exist=False):
         """
-        Gets the FFMPEG version, sets the FFMPEG url and calls the super
-        constructor
+        Gets the version and url of FFMPEG and calls the super constructor
+
+        The constructor will also make objects of the dependency installers
 
         Parameters
         ----------
         config_path : Path or str
             The path to the get_configure_command file
         ffmpeg_log_path : None or Path or str
-            Path to the log file containing the log of Installer.
+            Path to the log file for FFMPEG
+            If None, the log will directed to stderr
+        nasm_log_path : None or Path or str
+            Path to the log file for NASM
+            If None, the log will directed to stderr
+        yasm_log_path : None or Path or str
+            Path to the log file for YASM
+            If None, the log will directed to stderr
+        x264_log_path : None or Path or str
+            Path to the log file for X264
             If None, the log will directed to stderr
         overwrite_on_exist : bool
             Whether to overwrite the package if it is already found
@@ -58,7 +68,7 @@ class FFMPEGInstaller(Installer):
 
     def install(self):
         """
-        Installs the FFMPEG package
+        Installs the FFMPEG package and its dependencies
         """
 
         # Install dependencies
