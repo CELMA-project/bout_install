@@ -88,16 +88,10 @@ class Installer(object):
                                              f'{os.environ["LD_LIBRARY_PATH"]}')
 
         # Set the versions
-        self.cmake_version = self.config['versions']['cmake']
-        cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-
         self.slepc_version = self.config['versions']['slepc']
         self.petsc_version = self.config['versions']['petsc']
 
         # Set the urls
-        self.cmake_url = (f'http://cmake.org/files/'
-                          f'v{cmake_major_minor_version}/'
-                          f'cmake-{self.cmake_version}.tar.gz')
         self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
                           f'filename=slepc-{self.slepc_version}.tar.gz')
         self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
@@ -386,7 +380,7 @@ class Installer(object):
         tar_dir : Path
             Directory of the tar file
         config_log_path : Path
-            Path to config.log
+            Path to the Makefile
         extra_config_option:
             Configure option to include.
             --prefix=self.local_dir is already added as an option
@@ -398,9 +392,11 @@ class Installer(object):
             config_options = dict(prefix=str(self.local_dir))
             if extra_config_option is not None:
                 config_options = {**config_options, **extra_config_option}
-            self.logger.info(f'Configuring with options {config_options}')
+
             config_str = \
                 self.get_configure_command(config_options=config_options)
+
+            self.logger.info(f'Configuring with: {config_str}')
             self.run_subprocess(config_str, tar_dir)
         else:
             self.logger.info(f'{config_log_path} found, skipping configuring')
@@ -445,7 +441,8 @@ class Installer(object):
             Whether to overwrite the package if it is already found
         extra_config_option : dict
             Configure option to include.
-            --prefix=self.local_dir is already added as an option
+            The installation prefix of self.local_dir is already added as an
+            option
         """
 
         # Download the tar file
