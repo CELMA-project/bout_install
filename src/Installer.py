@@ -88,16 +88,10 @@ class Installer(object):
                                              f'{os.environ["LD_LIBRARY_PATH"]}')
 
         # Set the versions
-        self.cmake_version = self.config['versions']['cmake']
-        cmake_major_minor_version = '.'.join(self.cmake_version.split('.')[:2])
-
         self.slepc_version = self.config['versions']['slepc']
         self.petsc_version = self.config['versions']['petsc']
 
         # Set the urls
-        self.cmake_url = (f'http://cmake.org/files/'
-                          f'v{cmake_major_minor_version}/'
-                          f'cmake-{self.cmake_version}.tar.gz')
         self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
                           f'filename=slepc-{self.slepc_version}.tar.gz')
         self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
