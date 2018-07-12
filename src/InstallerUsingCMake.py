@@ -109,7 +109,7 @@ class InstallerUsingCMake(Installer):
 
         # Configure and make
         build_dir = tar_dir.joinpath('build')
-        makefile_path = build_dir.joinpath('build', 'Makefile')
+        makefile_path = build_dir.joinpath('Makefile')
         self.run_cmake(build_dir,
                        makefile_path,
                        extra_cmake_option,
