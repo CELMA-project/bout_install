@@ -441,7 +441,8 @@ class Installer(object):
             Whether to overwrite the package if it is already found
         extra_config_option : dict
             Configure option to include.
-            --prefix=self.local_dir is already added as an option
+            The installation prefix of self.local_dir is already added as an
+            option
         """
 
         # Download the tar file

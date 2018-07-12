@@ -9,8 +9,9 @@ exclude_lines =
     if __name__ == .__main__.
 omit =
     tests/*
-    # Takes too long time to build the GCC
+    # Takes too long time to build these
     src/GCCInstaller.py
+    src/CMAKEInstaller.py
     # HDF5 is tested in NetCDF installation
     src/HDF5Installer.py
 
