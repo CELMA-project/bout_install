@@ -99,7 +99,7 @@ class Installer(object):
         self.bout_url = (f'')
 
         # Declare other class variables
-        self.config_log_path = None
+        self.makefile_path = None
 
         # Setup the logger
         self._setup_logger()
@@ -369,7 +369,7 @@ class Installer(object):
 
     def run_configure(self,
                       tar_dir,
-                      config_log_path,
+                      makefile_path,
                       extra_config_option,
                       overwrite_on_exist):
         """
@@ -379,8 +379,8 @@ class Installer(object):
         ----------
         tar_dir : Path
             Directory of the tar file
-        config_log_path : Path
-            Path to config.log
+        makefile_path : Path
+            Path to the Makefile
         extra_config_option:
             Configure option to include.
             --prefix=self.local_dir is already added as an option
@@ -388,16 +388,18 @@ class Installer(object):
             Whether to overwrite the package if it is already found
         """
 
-        if not config_log_path.is_file() or overwrite_on_exist:
+        if not makefile_path.is_file() or overwrite_on_exist:
             config_options = dict(prefix=str(self.local_dir))
             if extra_config_option is not None:
                 config_options = {**config_options, **extra_config_option}
-            self.logger.info(f'Configuring with options {config_options}')
+
             config_str = \
                 self.get_configure_command(config_options=config_options)
+
+            self.logger.info(f'Configuring with: {config_str}')
             self.run_subprocess(config_str, tar_dir)
         else:
-            self.logger.info(f'{config_log_path} found, skipping configuring')
+            self.logger.info(f'{makefile_path} found, skipping configuring')
 
     def run_make(self, tar_dir, file_from_make, overwrite_on_exist):
         """
@@ -451,9 +453,9 @@ class Installer(object):
         self.run_untar(tar_file_path, tar_dir, overwrite_on_exist)
 
         # Configure and make
-        config_log_path = tar_dir.joinpath('config.log')
+        makefile_path = tar_dir.joinpath('Makefile')
         self.run_configure(tar_dir,
-                           config_log_path,
+                           makefile_path,
                            extra_config_option,
                            overwrite_on_exist)
         self.run_make(tar_dir, file_from_make, overwrite_on_exist)
