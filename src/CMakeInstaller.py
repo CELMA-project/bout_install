@@ -75,7 +75,7 @@ class CMakeInstaller(Installer):
             config_str = config_str.replace('configure', 'bootstrap')
             self.run_subprocess(config_str, tar_dir)
         else:
-            self.logger.info(f'{config_log_path} found, skipping configuring')
+            self.logger.info(f'{make_path} found, skipping configuring')
 
     def install(self):
         """
