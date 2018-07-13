@@ -89,13 +89,10 @@ class Installer(object):
 
         # Set the versions
         self.slepc_version = self.config['versions']['slepc']
-        self.petsc_version = self.config['versions']['petsc']
 
         # Set the urls
         self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
                           f'filename=slepc-{self.slepc_version}.tar.gz')
-        self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
-                          f'petsc-{self.petsc_version}.tar.gz')
         self.bout_url = (f'')
 
         # Declare other class variables
