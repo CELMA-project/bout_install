@@ -91,6 +91,21 @@ class PETScInstaller(Installer):
         config_str = f'python2 ./configure{options}'
         return config_str
 
+    def get_petsc_arch(self):
+        """
+        Returns the os dependent PETSC_ARCH variable
+
+        Returns
+        -------
+        petsc_arch : str
+            The PETSC_ARCH variable
+        """
+
+        tar_dir = self.get_tar_dir(self.get_tar_file_path(self.petsc_url))
+        petsc_arch = list(tar_dir.glob('arch*'))[0].name
+
+        return petsc_arch
+
     def make(self, path):
         """
         Make the package using make all and make test
@@ -102,7 +117,8 @@ class PETScInstaller(Installer):
         """
 
         petsc_dir = f'PETSC_DIR={self.install_dir}/petsc-{self.petsc_version}'
-        petsc_arch = f'PETSC_ARCH=arch-linux2-cxx-debug'
+
+        petsc_arch = f'PETSC_ARCH={self.get_petsc_arch()}'
 
         make_all_str = f'make {petsc_dir} {petsc_arch} all'
         self.run_subprocess(make_all_str, path)
@@ -110,7 +126,7 @@ class PETScInstaller(Installer):
         make_all_str = f'make {petsc_dir} {petsc_arch} install'
         self.run_subprocess(make_all_str, path)
 
-        make_test_str = f'make {petsc_arch} test'
+        make_test_str = f'make {petsc_dir} test'
         self.run_subprocess(make_test_str, path)
 
     def install(self):
