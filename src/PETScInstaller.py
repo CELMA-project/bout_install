@@ -101,7 +101,7 @@ class PETScInstaller(Installer):
             Path to the get_configure_command file
         """
 
-        petsc_dir = f'PETSC_DIR={self.local_dir}/petsc-{self.petsc_version}'
+        petsc_dir = f'PETSC_DIR={self.install_dir}/petsc-{self.petsc_version}'
         petsc_arch = f'PETSC_ARCH=arch-linux2-cxx-debug'
 
         make_all_str = f'make {petsc_dir} {petsc_arch} all'
