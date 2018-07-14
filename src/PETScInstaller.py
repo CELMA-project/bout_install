@@ -46,10 +46,11 @@ class PETScInstaller(Installer):
         self.mpi = MPIInstaller(config_path=config_path,
                                 log_path=mpi_log_path)
 
-        self.file_from_make = self.local_dir.joinpath('bin', 'petsc-wisdom')
+        self.file_from_make = self.local_dir.joinpath('lib', 'libpetsc.a')
 
         self.extra_config_options = {'with-clanguage': 'cxx',
                                      'with-mpi': 1,
+                                     'with-mpi-dir': f'{self.local_dir}',
                                      'with-precision': 'double',
                                      'with-scalar-type': 'real',
                                      'with-shared-libraries': 0,
@@ -100,13 +101,16 @@ class PETScInstaller(Installer):
             Path to the get_configure_command file
         """
 
-        make_options = (f'PETSC_DIR={self.local_dir}/petsc-{self.petsc_version}' 
-                        f' PETSC_ARCH=arch-linux2-cxx-debug')
+        petsc_dir = f'PETSC_DIR={self.local_dir}/petsc-{self.petsc_version}'
+        petsc_arch = f'PETSC_ARCH=arch-linux2-cxx-debug'
 
-        make_all_str = f'make {make_options} all'
+        make_all_str = f'make {petsc_dir} {petsc_arch} all'
         self.run_subprocess(make_all_str, path)
 
-        make_test_str = f'make {make_options} test'
+        make_all_str = f'make {petsc_dir} {petsc_arch} install'
+        self.run_subprocess(make_all_str, path)
+
+        make_test_str = f'make {petsc_arch} test'
         self.run_subprocess(make_test_str, path)
 
     def install(self):
