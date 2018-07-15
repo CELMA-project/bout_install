@@ -12,3 +12,4 @@ omit =
     # Takes too long time to build these
     src/GCCInstaller.py
     src/CMAKEInstaller.py
+    src/FFMPEGInstaller.py
