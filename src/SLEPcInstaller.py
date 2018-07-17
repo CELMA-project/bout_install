@@ -1,29 +1,33 @@
+import os
 from pathlib import Path
 from src.Installer import Installer
-from src.MPIInstaller import MPIInstaller
+from src.PETScInstaller import PETScInstaller
 
 
-class PETScInstaller(Installer):
+class SLEPcInstaller(Installer):
     """
-    Installer object for installing PETSc
+    Installer object for installing SLEPc
     """
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
+                 slepc_log_path=Path(__file__).parents[1].joinpath('log',
+                                                                   'slepc.log'),
                  petsc_log_path=Path(__file__).parents[1].joinpath('log',
                                                                    'petsc.log'),
                  mpi_log_path=Path(__file__).parents[1].joinpath('log',
                                                                  'mpi.log'),
                  overwrite_on_exist=False):
         """
-        Gets the version and url of PETSc and calls the super constructor
-
-        The constructor will also make an object of the MPI installer and
+        Gets the SLEPc version, sets the SLEPc url and calls the super constructor
 
         Parameters
         ----------
         config_path : Path or str
             The path to the get_configure_command file
+        slepc_log_path : None or Path or str
+            Path to the log file for SLEPc
+            If None, the log will directed to stderr
         petsc_log_path : None or Path or str
             Path to the log file for PETSc
             If None, the log will directed to stderr
@@ -36,26 +40,20 @@ class PETScInstaller(Installer):
 
         self.overwrite_on_exist = overwrite_on_exist
 
-        super().__init__(config_path=config_path, log_path=petsc_log_path)
+        super().__init__(config_path=config_path, log_path=slepc_log_path)
 
         self.petsc_version = self.config['versions']['petsc']
-        self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
-                          f'petsc-{self.petsc_version}.tar.gz')
+        self.slepc_version = self.config['versions']['slepc']
 
         # Create dependency installer
-        self.mpi = MPIInstaller(config_path=config_path,
-                                log_path=mpi_log_path)
+        self.petsc = PETScInstaller(config_path=config_path,
+                                    petsc_log_path=petsc_log_path,
+                                    mpi_log_path=mpi_log_path)
 
-        self.file_from_make = self.local_dir.joinpath('lib', 'libpetsc.a')
+        self.slepc_url = (f'http://slepc.upv.es/download/distrib/'
+                          f'slepc-{self.slepc_version}.tar.gz')
 
-        self.extra_config_options = {'with-clanguage': 'cxx',
-                                     'with-mpi': 1,
-                                     'with-mpi-dir': f'{self.local_dir}',
-                                     'with-precision': 'double',
-                                     'with-scalar-type': 'real',
-                                     'with-shared-libraries': 0,
-                                     'download-fblaslapack': 1,
-                                     'download-f2cblaslapack': 1}
+        self.file_from_make = self.local_dir.joinpath('lib', 'libslepc.a')
 
     @staticmethod
     def get_configure_command(config_options=None):
@@ -91,21 +89,6 @@ class PETScInstaller(Installer):
         config_str = f'python2 ./configure{options}'
         return config_str
 
-    def get_petsc_arch(self):
-        """
-        Returns the os dependent PETSC_ARCH variable
-
-        Returns
-        -------
-        petsc_arch : str
-            The PETSC_ARCH variable
-        """
-
-        tar_dir = self.get_tar_dir(self.get_tar_file_path(self.petsc_url))
-        petsc_arch = list(tar_dir.glob('arch*'))[0].name
-
-        return petsc_arch
-
     def make(self, path):
         """
         Make the package using make all and make test
@@ -116,31 +99,39 @@ class PETScInstaller(Installer):
             Path to the get_configure_command file
         """
 
-        petsc_dir = f'PETSC_DIR={self.install_dir}/petsc-{self.petsc_version}'
+        make_options = \
+            (f'SLEPC_DIR={self.install_dir}/slepc-{self.slepc_version}'
+             f' PETSC_DIR={self.local_dir}' 
+             f' PETSC_ARCH=arch-installed-petsc')
 
-        petsc_arch = f'PETSC_ARCH={self.get_petsc_arch()}'
+        make_str = f'make {make_options}'
+        self.run_subprocess(make_str, path)
 
-        make_all_str = f'make {petsc_dir} {petsc_arch} all'
-        self.run_subprocess(make_all_str, path)
-
-        make_install_str = f'make {petsc_dir} {petsc_arch} install'
+        make_install_str = f'make {make_options} install'
         self.run_subprocess(make_install_str, path)
 
-        make_test_str = f'make {petsc_dir} test'
+        make_test_options =  \
+            (f'SLEPC_DIR={self.local_dir}'
+             f' PETSC_DIR={self.local_dir}')
+        make_test_str = f'make {make_test_options} test'
         self.run_subprocess(make_test_str, path)
-
+        
     def install(self):
         """
-        Installs the MPI and the PETSc package
+        Installs the SLEPc package
         """
 
         # Install dependencies
-        self.mpi.install()
+        self.petsc.install()
 
-        self.logger.info('Installing PETSc')
-        self.install_package(url=self.petsc_url,
+        # Set config log path
+        path_config_log = Path('.').joinpath('arch-installed-petsc',
+                                             'conf',
+                                             'configure.log')
+
+        self.logger.info('Installing SLEPc')
+        self.install_package(url=self.slepc_url,
                              file_from_make=self.file_from_make,
-                             path_config_log='configure.log',
-                             extra_config_option=self.extra_config_options,
+                             path_config_log=path_config_log,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
