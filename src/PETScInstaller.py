@@ -123,8 +123,8 @@ class PETScInstaller(Installer):
         make_all_str = f'make {petsc_dir} {petsc_arch} all'
         self.run_subprocess(make_all_str, path)
 
-        make_all_str = f'make {petsc_dir} {petsc_arch} install'
-        self.run_subprocess(make_all_str, path)
+        make_install_str = f'make {petsc_dir} {petsc_arch} install'
+        self.run_subprocess(make_install_str, path)
 
         make_test_str = f'make {petsc_dir} test'
         self.run_subprocess(make_test_str, path)
