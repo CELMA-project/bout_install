@@ -140,7 +140,7 @@ class PETScInstaller(Installer):
         self.logger.info('Installing PETSc')
         self.install_package(url=self.petsc_url,
                              file_from_make=self.file_from_make,
-                             config_log_name='configure.log',
+                             path_config_log='configure.log',
                              extra_config_option=self.extra_config_options,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')

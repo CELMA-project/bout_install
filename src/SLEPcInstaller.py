@@ -50,11 +50,10 @@ class SLEPcInstaller(Installer):
                                     petsc_log_path=petsc_log_path,
                                     mpi_log_path=mpi_log_path)
 
-        self.slepc_url = (f'http://slepc.upv.es/download/download.php?filename='
+        self.slepc_url = (f'http://slepc.upv.es/download/distrib/'
                           f'slepc-{self.slepc_version}.tar.gz')
 
-        # FIXME: Correct the bin
-        self.file_from_make = self.local_dir.joinpath('bin', 'slepc-wisdom')
+        self.file_from_make = self.local_dir.joinpath('lib', 'libslepc.a')
 
     @staticmethod
     def get_configure_command(config_options=None):
@@ -102,13 +101,19 @@ class SLEPcInstaller(Installer):
 
         make_options = \
             (f'SLEPC_DIR={self.install_dir}/slepc-{self.slepc_version}'
-             f' PETSC_DIR={self.install_dir}/petsc-{self.petsc_version}' 
-             f' PETSC_ARCH={self.petsc.get_petsc_arch()}')
+             f' PETSC_DIR={self.local_dir}' 
+             f' PETSC_ARCH=arch-installed-petsc')
 
         make_str = f'make {make_options}'
         self.run_subprocess(make_str, path)
 
-        make_test_str = f'make test'
+        make_install_str = f'make {make_options} install'
+        self.run_subprocess(make_install_str, path)
+
+        make_test_options =  \
+            (f'SLEPC_DIR={self.local_dir}'
+             f' PETSC_DIR={self.local_dir}')
+        make_test_str = f'make {make_test_options} test'
         self.run_subprocess(make_test_str, path)
         
     def install(self):
@@ -119,13 +124,14 @@ class SLEPcInstaller(Installer):
         # Install dependencies
         self.petsc.install()
 
-        # Set the environment variables
-        os.environ['PETSC_DIR'] = \
-            f'{self.install_dir}/petsc-{self.petsc_version}'
-        os.environ['PETSC_ARCH'] = self.petsc.get_petsc_arch()
+        # Set config log path
+        path_config_log = Path('.').joinpath('arch-installed-petsc',
+                                             'conf',
+                                             'configure.log')
 
         self.logger.info('Installing SLEPc')
         self.install_package(url=self.slepc_url,
                              file_from_make=self.file_from_make,
+                             path_config_log=path_config_log,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
