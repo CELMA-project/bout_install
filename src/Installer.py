@@ -422,6 +422,7 @@ class Installer(object):
     def install_package(self,
                         url,
                         file_from_make,
+                        config_log_name='config.log',
                         overwrite_on_exist=False,
                         extra_config_option=None):
         """
@@ -434,6 +435,8 @@ class Installer(object):
         file_from_make : Path or str
             File originating from the make processes (used to check if the
             package has been made)
+        config_log_name : str
+            Name of the log file for configure
         overwrite_on_exist : bool
             Whether to overwrite the package if it is already found
         extra_config_option : dict
@@ -451,7 +454,7 @@ class Installer(object):
         self.run_untar(tar_file_path, tar_dir, overwrite_on_exist)
 
         # Configure and make
-        config_log_path = tar_dir.joinpath('config.log')
+        config_log_path = tar_dir.joinpath(config_log_name)
         self.run_configure(tar_dir,
                            config_log_path,
                            extra_config_option,
