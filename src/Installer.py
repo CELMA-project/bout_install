@@ -1,6 +1,5 @@
 import configparser
 import logging
-import multiprocessing
 import os
 import requests
 import shutil
@@ -11,33 +10,49 @@ from pathlib import Path
 
 class Installer(object):
     """
-    Installation object for installing dependencies needed for the CELMA code.
+    Class for building packages from scratch
 
-    Supports the installation of the following software:
-        * gcc
-        * cmake
-        * mpi
-        * fftw
-        * hdf5
-        * netCDF-4
-        * SLEPc
-        * PETSc
-        * BOUT++
-        * ffpmeg
+    This class serves as the top-most parent class for most of the installer
+    classes.
+
+    Contains member functions for
+    * Downloading a tar file for a package
+    * Untar the downloaded tar file for the package
+    * Configure the package
+    * Making the package (including make install)
 
     Examples
     --------
-    FIXME
+    The following example will install FFTW.
+    See also the examples of the child-classes of the Installer
+
+    >>> from src.Installer import Installer
+    >>>
+    >>> # Instantiate the installer
+    >>> installer = Installer()
+    >>>
+    >>> # Get the fftw-version from the configuration
+    >>> fftw_version = installer.config['versions']['fftw']
+    >>> fftw_url = f'http://www.fftw.org/fftw-{fftw_version}.tar.gz'
+    >>>
+    >>> bin_file = installer.local_dir.joinpath('bin', 'fftw-wisdom')
+    >>>
+    >>> # Install FFTW
+    >>> installer.install_package(fftw_url, bin_file)
     """
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
                  log_path=None):
         """
-        Sets the versions of the different software
+        Makes the logger and installation paths (obtained from config.ini)
 
-        configparser
-        FIXME
+        Notes
+        -----
+        `self.local_dir.joinpath('bin')` will be set to the environments
+        `PATH` variable and `self.local_dir.joinpath('lib')` will be set to the
+        environments `LD_LIBRARY_PATH` variable in order to ensure a proper
+        installation
 
         Parameters
         ----------
@@ -86,14 +101,6 @@ class Installer(object):
             os.environ['LD_LIBRARY_PATH'] = (f'{self.local_dir.joinpath("lib")}'
                                              f'{os.pathsep}'
                                              f'{os.environ["LD_LIBRARY_PATH"]}')
-
-        # Set the versions
-        self.slepc_version = self.config['versions']['slepc']
-
-        # Set the urls
-        self.slepc_url = (f'http://slepc.upv.es/download/download.php?'
-                          f'filename=slepc-{self.slepc_version}.tar.gz')
-        self.bout_url = (f'')
 
         # Declare other class variables
         self.config_log_path = None
