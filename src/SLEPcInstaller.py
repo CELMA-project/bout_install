@@ -63,7 +63,6 @@ class SLEPcInstaller(Installer):
         Notes
         -----
         Configuring happens through python 2
-        https://github.com/petsc/petsc/blob/master/configure
 
         Parameters
         ----------
@@ -101,8 +100,7 @@ class SLEPcInstaller(Installer):
 
         make_options = \
             (f'SLEPC_DIR={self.install_dir}/slepc-{self.slepc_version}'
-             f' PETSC_DIR={self.local_dir}' 
-             f' PETSC_ARCH=arch-installed-petsc')
+             f' PETSC_DIR={self.local_dir}')
 
         make_str = f'make {make_options}'
         self.run_subprocess(make_str, path)
@@ -112,10 +110,11 @@ class SLEPcInstaller(Installer):
 
         make_test_options =  \
             (f'SLEPC_DIR={self.local_dir}'
-             f' PETSC_DIR={self.local_dir}')
-        make_test_str = f'make {make_test_options} test'
+             f' PETSC_DIR={self.local_dir}'
+             f' PETSC_ARCH=""')
+        make_test_str = f'make {make_test_options} check'
         self.run_subprocess(make_test_str, path)
-        
+
     def install(self):
         """
         Installs the SLEPc package
@@ -135,3 +134,4 @@ class SLEPcInstaller(Installer):
                              path_config_log=path_config_log,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
+

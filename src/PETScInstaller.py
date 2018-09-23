@@ -126,7 +126,7 @@ class PETScInstaller(Installer):
         make_install_str = f'make {petsc_dir} {petsc_arch} install'
         self.run_subprocess(make_install_str, path)
 
-        make_test_str = f'make {petsc_dir} test'
+        make_test_str = f'make {petsc_dir} PETSC_ARCH="" test'
         self.run_subprocess(make_test_str, path)
 
     def install(self):
@@ -144,3 +144,4 @@ class PETScInstaller(Installer):
                              extra_config_option=self.extra_config_options,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
+
