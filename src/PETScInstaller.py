@@ -126,16 +126,15 @@ class PETScInstaller(Installer):
         make_install_str = f'make {petsc_dir} {petsc_arch} install'
         self.run_subprocess(make_install_str, path)
 
-        make_test_str = f'make {petsc_dir} PETSC_ARCH="" test'
+        make_test_str = f'make PETSC_DIR={self.local_dir} PETSC_ARCH= test'
         self.run_subprocess(make_test_str, path)
 
     def install(self):
         """
-        Installs the MPI and the PETSc package
+        Installs PETSc and its dependencies
         """
 
-        # Install dependencies
-        self.mpi.install()
+        self.install_dependencies()
 
         self.logger.info('Installing PETSc')
         self.install_package(url=self.petsc_url,
@@ -145,3 +144,9 @@ class PETScInstaller(Installer):
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
 
+    def install_dependencies(self):
+        """
+        Install PETSc dependencies
+        """
+
+        self.mpi.install()
