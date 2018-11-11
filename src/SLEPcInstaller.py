@@ -19,7 +19,8 @@ class SLEPcInstaller(Installer):
                                                                  'mpi.log'),
                  overwrite_on_exist=False):
         """
-        Gets the SLEPc version, sets the SLEPc url and calls the super constructor
+        Gets the SLEPc version, sets the SLEPc url and calls the super
+        constructor
 
         Parameters
         ----------
@@ -111,22 +112,21 @@ class SLEPcInstaller(Installer):
         make_test_options =  \
             (f'SLEPC_DIR={self.local_dir}'
              f' PETSC_DIR={self.local_dir}'
-             f' PETSC_ARCH=""')
+             f' PETSC_ARCH=')
         make_test_str = f'make {make_test_options} check'
         self.run_subprocess(make_test_str, path)
 
     def install(self):
         """
-        Installs the SLEPc package
+        Installs the SLEPc package and its dependencies
         """
 
-        # Install dependencies
-        self.petsc.install()
+        self.install_dependencies()
 
         # Set config log path
-        path_config_log = Path('.').joinpath('arch-installed-petsc',
-                                             'conf',
-                                             'configure.log')
+        path_config_log = Path(__file__).joinpath('arch-installed-petsc',
+                                                  'conf',
+                                                  'configure.log')
 
         self.logger.info('Installing SLEPc')
         self.install_package(url=self.slepc_url,
@@ -135,3 +135,9 @@ class SLEPcInstaller(Installer):
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
 
+    def install_dependencies(self):
+        """
+        Installs SLEPc dependencies
+        """
+
+        self.petsc.install()
