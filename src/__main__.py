@@ -125,14 +125,19 @@ def add_str_to_bashrc(bashrc_str):
     """
     Adds the bashrc_str to .bashrc
 
+    .bashrc will be created if non-existent
+
     Parameters
     ----------
     bashrc_str : str
         The string to add to bashrc
     """
 
-    bashrc_str = f'# Added by bout_installer.py{bashrc_str}'
+    bashrc_str = f'# Added by bout_installer.py\n{bashrc_str}'
     bashrc_path = Path.home().joinpath('.bashrc')
+
+    if not bashrc_path:
+        bashrc_path.touch()
 
     print(f'Adding following to .bashrc:\n{bashrc_str}')
 
