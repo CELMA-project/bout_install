@@ -72,8 +72,7 @@ class NetCDFInstaller(Installer):
         Installs HDF5, the NetCDF package and the CXX interface
         """
 
-        # Install dependencies
-        self.hdf5.install()
+        self.install_dependencies()
 
         self.logger.info('Installing NetCDF')
         self.install_package(url=self.netcdf_url,
@@ -84,6 +83,13 @@ class NetCDFInstaller(Installer):
 
         # Install the cxx interface
         self.netcdf_cxx.install()
+
+    def install_dependencies(self):
+        """
+        Installs NetCDF dependencies
+        """
+
+        self.hdf5.install()
 
 
 class NetCDFCXXInstaller(Installer):

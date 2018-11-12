@@ -71,10 +71,7 @@ class FFMPEGInstaller(Installer):
         Installs the FFMPEG package and its dependencies
         """
 
-        # Install dependencies
-        self.nasm.install()
-        self.yasm.install()
-        self.x264.install()
+        self.install_dependecies()
 
         self.logger.info('Installing FFMPEG')
         self.install_package(url=self.ffmpeg_url,
@@ -82,6 +79,15 @@ class FFMPEGInstaller(Installer):
                              extra_config_option=self.extra_config_options,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
+
+    def install_dependecies(self):
+        """
+        Installs FFMPEG dependencies
+        """
+
+        self.nasm.install()
+        self.yasm.install()
+        self.x264.install()
 
 
 class NASMInstaller(Installer):

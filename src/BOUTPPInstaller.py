@@ -9,11 +9,17 @@ class BOUTPPInstaller(InstallerUsingGit):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=Path(__file__).parents[1].joinpath('log', 'boutpp.log'),
+                 log_path=Path(__file__).parents[1].joinpath('log',
+                                                             'boutpp.log'),
                  overwrite_on_exist=False):
         """
         Gets the BOUT++ version, sets the BOUT++ url and calls the super
         constructor
+
+        Notes
+        -----
+        The BOUTPPInstaller does not install its dependencies.
+        See src.__main__.main for installation of dependencies
 
         Parameters
         ----------
