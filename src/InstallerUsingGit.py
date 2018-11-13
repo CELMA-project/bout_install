@@ -35,15 +35,7 @@ class InstallerUsingGit(Installer):
             If None, the log will directed to stderr
         """
 
-        self.config = configparser.ConfigParser(allow_no_value=True)
-        with Path(config_path).open() as f:
-            self.config.read_file(f)
-
-        # Set input
-        self.log_path = log_path
-
-        # Obtain the current working directory
-        self.cwd = Path.cwd()
+        super().__init__(config_path=config_path, log_path=log_path)
 
         # Obtain install dirs
         git_dir = self.config[section]['git_dir']
@@ -51,24 +43,6 @@ class InstallerUsingGit(Installer):
 
         self.git_dir = git_dir if git_dir != '' else Path().home()
         self.checkout = checkout if checkout != '' else 'master'
-
-        # Set the environment variables
-        # Set the local path first
-        os.environ['PATH'] = (f'{self.local_dir.joinpath("bin")}'
-                              f'{os.pathsep}'
-                              f'{os.environ["PATH"]}')
-        if 'LD_LIBRARY_PATH' not in os.environ:
-            os.environ['LD_LIBRARY_PATH'] = f'{self.local_dir.joinpath("lib")}'
-        else:
-            os.environ['LD_LIBRARY_PATH'] = (f'{self.local_dir.joinpath("lib")}'
-                                             f'{os.pathsep}'
-                                             f'{os.environ["LD_LIBRARY_PATH"]}')
-
-        # Declare other class variables
-        self.config_log_path = None
-
-        # Setup the logger
-        self._setup_logger()
 
     def make(self, path):
         """
