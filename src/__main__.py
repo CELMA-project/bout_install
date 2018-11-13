@@ -105,6 +105,7 @@ def main(config_path, add_to_bashrc=False):
         slepc_installer.install()
         print('...done')
 
+    print('Installing BOUT++...')
     boutpp_installer = BOUTPPInstaller(config_path=config_path)
     boutpp_installer.install()
     print('...done')

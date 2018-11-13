@@ -38,7 +38,7 @@ class TestMain(unittest.TestCase):
         # FIXME: You are here
         # FIXME: Refactor
         # FIXME: Make a setup.py and add to pip
-        # main(self.config)
+        main(self.config)
         # NOTE: Here we test main
         # After build one of the bout-stuff to see that it is working
 
