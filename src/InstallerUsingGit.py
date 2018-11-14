@@ -82,7 +82,7 @@ class InstallerUsingGit(Installer):
             if self.git_dir.is_dir():
                 shutil.rmtree(str(self.git_dir))
             command = f'git clone {url} {self.git_dir}'
-            self.run_subprocess(command, self.git_dir)
+            self.run_subprocess(command, self.git_dir.parent)
 
     def install_package(self,
                         url,
