@@ -40,7 +40,6 @@ class BOUTPPInstaller(InstallerUsingGit):
         self.boutpp_url = 'https://github.com/boutproject/BOUT-dev.git'
         self.file_from_make = self.git_dir.joinpath('lib', 'libbout++.a')
 
-        self.local_dir = self.config['install_dirs']['local_dir']
         checks = self.config['bout_options']['enable_checks']
         optimize = self.config['bout_options']['enable_optimize']
 
