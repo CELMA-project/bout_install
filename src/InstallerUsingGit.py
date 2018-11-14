@@ -41,7 +41,8 @@ class InstallerUsingGit(Installer):
         git_dir = self.config[section]['git_dir']
         checkout = self.config[section]['checkout']
 
-        self.git_dir = git_dir if git_dir != '' else Path().home()
+        # NOTE: If git_dir equals '', it will be set from the url in run_git
+        self.git_dir = git_dir
         self.checkout = checkout if checkout != '' else 'master'
 
     def make(self, path):
@@ -63,6 +64,7 @@ class InstallerUsingGit(Installer):
 
     def run_git(self, url, overwrite_on_exist=False):
         """
+        Runs git
 
         Parameters
         ----------
@@ -71,9 +73,14 @@ class InstallerUsingGit(Installer):
         overwrite_on_exist : bool
             Whether to overwrite the package if it is already found
         """
+
+        if self.git_dir == '':
+            self.git_dir = Path().home().\
+                joinpath(url.split('/')[-1].split('.git')[0])
+
         if not self.git_dir.is_dir() or overwrite_on_exist:
             if self.git_dir.is_dir():
-                shutil.rmtree(self.git_dir)
+                shutil.rmtree(str(self.git_dir))
             command = f'git clone {url} {self.git_dir}'
             self.run_subprocess(command, self.git_dir)
 
