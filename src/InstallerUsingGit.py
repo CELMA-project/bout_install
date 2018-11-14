@@ -11,6 +11,7 @@ class InstallerUsingGit(Installer):
     """
 
     def __init__(self,
+                 name,
                  section,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
                  log_path=None):
@@ -41,8 +42,11 @@ class InstallerUsingGit(Installer):
         git_dir = self.config[section]['git_dir']
         checkout = self.config[section]['checkout']
 
-        # NOTE: If git_dir equals '', it will be set from the url in run_git
-        self.git_dir = git_dir
+        if git_dir == '':
+            self.git_dir = Path().home().joinpath(name)
+        else:
+            self.git_dir = Path(git_dir)
+
         self.checkout = checkout if checkout != '' else 'master'
 
     def make(self, path):
@@ -69,14 +73,10 @@ class InstallerUsingGit(Installer):
         Parameters
         ----------
         url : str
-            Url to the package repository
+            URL to the package repository
         overwrite_on_exist : bool
             Whether to overwrite the package if it is already found
         """
-
-        if self.git_dir == '':
-            self.git_dir = Path().home().\
-                joinpath(url.split('/')[-1].split('.git')[0])
 
         if not self.git_dir.is_dir() or overwrite_on_exist:
             if self.git_dir.is_dir():

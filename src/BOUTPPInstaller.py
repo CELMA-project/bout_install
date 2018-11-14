@@ -34,8 +34,12 @@ class BOUTPPInstaller(InstallerUsingGit):
 
         self.overwrite_on_exist = overwrite_on_exist
         section = 'bout_options'
+        name = 'BOUT-dev'
 
-        super().__init__(section, config_path=config_path, log_path=log_path)
+        super().__init__(name,
+                         section,
+                         config_path=config_path,
+                         log_path=log_path)
 
         self.boutpp_url = 'https://github.com/boutproject/BOUT-dev.git'
         self.file_from_make = self.git_dir.joinpath('lib', 'libbout++.a')
