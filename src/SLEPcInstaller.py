@@ -124,9 +124,16 @@ class SLEPcInstaller(Installer):
         self.install_dependencies()
 
         # Set config log path
-        path_config_log = Path(__file__).joinpath('arch-installed-petsc',
-                                                  'conf',
-                                                  'configure.log')
+        # NOTE: The configuration log is hiding in strange places in SLEPc,
+        #       we'll therefore try to glob us to the configure.log
+        tar_dir = self.get_tar_dir(self.get_tar_file_path(self.slepc_url))
+        path_config_logs = sorted(tar_dir.glob('**/configure.log'))
+        if len(path_config_logs) == 0:
+            # No configuration file found, might as well set it to configure.log
+            path_config_log = 'configure.log'
+        else:
+            # Configuration files found, use the first
+            path_config_log = path_config_logs[0]
 
         self.logger.info('Installing SLEPc')
         self.install_package(url=self.slepc_url,
