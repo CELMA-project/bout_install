@@ -34,7 +34,7 @@ def main(config_path, add_to_bashrc=False):
     # FIXME: Options for adding lines to bashrc or bash_profile
 
     # String to print when installation is complete
-    final_str = '\n\n'
+    final_str = '\n'
 
     config = configparser.ConfigParser(allow_no_value=True)
     with config_path.open() as f:
@@ -112,7 +112,7 @@ def main(config_path, add_to_bashrc=False):
 
     final_str += (f'export LD_LIBRARY_PATH='
                   f'{boutpp_installer.local_dir.joinpath("lib")}:'
-                  f'LD_LIBRARY_PATH')
+                  f'LD_LIBRARY_PATH\n\n')
 
     if add_to_bashrc:
         add_str_to_bashrc(final_str)

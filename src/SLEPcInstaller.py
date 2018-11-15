@@ -126,7 +126,8 @@ class SLEPcInstaller(Installer):
         # Set config log path
         # NOTE: The configuration log is hiding in strange places in SLEPc,
         #       we'll therefore try to glob us to the configure.log
-        tar_dir = self.get_tar_dir(self.get_tar_file_path(self.slepc_url))
+        tar_dir = Path(self.get_tar_file_path(self.slepc_url)).\
+            absolute().parent.joinpath(f'slepc-{self.slepc_version}')
         path_config_logs = sorted(tar_dir.glob('**/configure.log'))
         if len(path_config_logs) == 0:
             # No configuration file found, might as well set it to configure.log
