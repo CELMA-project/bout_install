@@ -195,7 +195,14 @@ class Installer(object):
             The url to get the tar file from
         """
 
-        response = requests.get(url, stream=True)
+        try:
+            response = requests.get(url, stream=True)
+        except requests.exceptions.SSLError:
+            msg = (f'SSL error occurred in {url}, trying to download without '
+                   f'SSL verification. Use with care!')
+            self.logger.warning(msg)
+            response = requests.get(url, stream=True, verify=False)
+
         response.raise_for_status()
 
         tar_file_path = self.get_tar_file_path(url)

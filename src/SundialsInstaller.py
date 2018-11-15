@@ -30,8 +30,7 @@ class SundialsInstaller(InstallerUsingCMake):
 
         self.sundials_version = self.config['versions']['sundials']
         self.sundials_url = (f'http://computation.llnl.gov/projects/'
-                             f'sundials-suite-nonlinear-differential-'
-                             f'algebraic-equation-solvers/download/'
+                             f'sundials/download/'
                              f'sundials-{self.sundials_version}.tar.gz')
 
         self.file_from_make = self.local_dir.joinpath('lib',
