@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import re
 import unittest
 import shutil
+import subprocess
 from pathlib import Path
 from src.__main__ import main
 from src.__main__ import add_str_to_bashrc
@@ -32,17 +35,56 @@ class TestMain(unittest.TestCase):
 
     def test_main(self):
         """
-        Test that the main function is working
+        Test the installation and that we can run blob2d with PETSc
         """
 
-        # FIXME: You are here
-        # FIXME: Refactor
-        # FIXME: Make a setup.py and add to pip
         main(self.config)
-        # NOTE: Here we test main
-        # After build one of the bout-stuff to see that it is working
 
-        pass
+        # We now try to make blob 2d
+        # The os.environ from BOUTPPInstaller should persist, so no need of
+        # running it again
+
+        # Copy to data/
+        blob2d_dir = self.base_setup.main_dir.joinpath('BOUT-dev',
+                                                       'examples',
+                                                       'blob2d')
+        data_dir = blob2d_dir.joinpath('data')
+        delta_025_dir = blob2d_dir.joinpath('delta_0.25')
+        shutil.copytree(delta_025_dir, data_dir)
+
+        # Change BOUT.inp lines
+        n_out = re.compile('^\bNOUT\b', re.IGNORECASE)
+        time_step = re.compile('^\bTIMESTEP\b', re.IGNORECASE)
+        boussinesq = re.compile('^\bboussinesq\b', re.IGNORECASE)
+
+        bout_inp_path = data_dir.joinpath('BOUT.inp')
+        with bout_inp_path.open('r') as f:
+            bout_inp_list = f.readlines()
+            for i in range(len(bout_inp_list)):
+                if n_out.search(bout_inp_list[i]):
+                    bout_inp_list[i] = 'NOUT = 2'
+                elif time_step.search(bout_inp_list[i]):
+                    bout_inp_list[i] = 'TIMESTEP = 0.01'
+                elif boussinesq.search(bout_inp_list[i]):
+                    bout_inp_list[i] = 'boussinesq = true'
+
+        with bout_inp_path.open('w') as f:
+            f.writelines(bout_inp_list)
+
+        # Make
+        os.chdir(blob2d_dir)
+        command = 'make'
+        result = subprocess.run(command.split(),
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        result.check_returncode()
+
+        # Run
+        command = 'mpirun np 2 ./blob2d'
+        result = subprocess.run(command.split(),
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        result.check_returncode()
 
 
 class TestMainHelpers(unittest.TestCase):
