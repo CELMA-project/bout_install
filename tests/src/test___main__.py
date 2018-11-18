@@ -72,9 +72,9 @@ class TestMain(unittest.TestCase):
             f.writelines(bout_inp_list)
 
         # Make
-        os.chdir(blob2d_dir)
         command = 'make'
         result = subprocess.run(command.split(),
+                                cwd=blob2d_dir,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         result.check_returncode()
@@ -82,6 +82,7 @@ class TestMain(unittest.TestCase):
         # Run
         command = 'mpirun -np 2 ./blob2d'
         result = subprocess.run(command.split(),
+                                cwd=blob2d_dir,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         result.check_returncode()
