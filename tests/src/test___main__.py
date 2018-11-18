@@ -53,20 +53,20 @@ class TestMain(unittest.TestCase):
         shutil.copytree(delta_025_dir, data_dir)
 
         # Change BOUT.inp lines
-        n_out = re.compile('^\bNOUT\b', re.IGNORECASE)
-        time_step = re.compile('^\bTIMESTEP\b', re.IGNORECASE)
-        boussinesq = re.compile('^\bboussinesq\b', re.IGNORECASE)
+        n_out = re.compile(r'^\bNOUT\b', re.IGNORECASE)
+        time_step = re.compile(r'^\bTIMESTEP\b', re.IGNORECASE)
+        boussinesq = re.compile(r'^\bboussinesq\b', re.IGNORECASE)
 
         bout_inp_path = data_dir.joinpath('BOUT.inp')
         with bout_inp_path.open('r') as f:
             bout_inp_list = f.readlines()
             for i in range(len(bout_inp_list)):
                 if n_out.search(bout_inp_list[i]):
-                    bout_inp_list[i] = 'NOUT = 2'
+                    bout_inp_list[i] = 'NOUT = 2\n'
                 elif time_step.search(bout_inp_list[i]):
-                    bout_inp_list[i] = 'TIMESTEP = 0.01'
+                    bout_inp_list[i] = 'TIMESTEP = 1e-5\n'
                 elif boussinesq.search(bout_inp_list[i]):
-                    bout_inp_list[i] = 'boussinesq = true'
+                    bout_inp_list[i] = 'boussinesq = false\n'
 
         with bout_inp_path.open('w') as f:
             f.writelines(bout_inp_list)
@@ -80,7 +80,7 @@ class TestMain(unittest.TestCase):
         result.check_returncode()
 
         # Run
-        command = 'mpirun np 2 ./blob2d'
+        command = 'mpirun -np 2 ./blob2d'
         result = subprocess.run(command.split(),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
