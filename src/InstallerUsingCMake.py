@@ -79,6 +79,7 @@ class InstallerUsingCMake(Installer):
     def install_package(self,
                         url,
                         file_from_make,
+                        path_config_log='',
                         overwrite_on_exist=False,
                         extra_cmake_option=None):
         """
@@ -91,6 +92,8 @@ class InstallerUsingCMake(Installer):
         file_from_make : Path or str
             File originating from the make processes (used to check if the
             package has been made)
+        path_config_log : str or Path
+            Only used in parent class
         overwrite_on_exist : bool
             Whether to overwrite the package if it is already found
         extra_cmake_option : dict
