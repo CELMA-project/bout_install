@@ -9,10 +9,11 @@ class CMakeInstaller(Installer):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=Path(__file__).parents[1].joinpath('log', 'cmake.log'),
+                 log_path=Path(__file__).parents[1].joinpath('log',
+                                                             'cmake.log'),
                  overwrite_on_exist=False):
         """
-        Gets the CMake version, sets the CMake url and calls the super constructor
+        Gets the CMake version, sets the CMake url, calls the super constructor
 
         Parameters
         ----------

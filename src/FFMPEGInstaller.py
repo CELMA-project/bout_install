@@ -9,14 +9,14 @@ class FFMPEGInstaller(Installer):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 ffmpeg_log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'ffmpeg.log'),
-                 nasm_log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'nasm.log'),
-                 yasm_log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'yasm.log'),
-                 x264_log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'x264.log'),
+                 ffmpeg_log_path=
+                 Path(__file__).parents[1].joinpath('log', 'ffmpeg.log'),
+                 nasm_log_path=
+                 Path(__file__).parents[1].joinpath('log', 'nasm.log'),
+                 yasm_log_path=
+                 Path(__file__).parents[1].joinpath('log', 'yasm.log'),
+                 x264_log_path=
+                 Path(__file__).parents[1].joinpath('log', 'x264.log'),
                  overwrite_on_exist=False):
         """
         Gets the version and url of FFMPEG and calls the super constructor

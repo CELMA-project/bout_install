@@ -108,4 +108,6 @@ local/
 install/
 examples/
 *.swp
+*delme*
 config_*.ini
+

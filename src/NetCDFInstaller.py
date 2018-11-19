@@ -11,12 +11,12 @@ class NetCDFInstaller(Installer):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 netcdf_log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'netcdf.log'),
-                 netcdf_cxx_log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'netcdf_cxx.log'),
-                 hdf5_log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'hdf5.log'),
+                 netcdf_log_path=
+                 Path(__file__).parents[1].joinpath('log', 'netcdf.log'),
+                 netcdf_cxx_log_path=
+                 Path(__file__).parents[1].joinpath('log', 'netcdf_cxx.log'),
+                 hdf5_log_path=
+                 Path(__file__).parents[1].joinpath('log', 'hdf5.log'),
                  overwrite_on_exist=False):
         """
         Gets the version and url of NetCDF and calls the super constructor
@@ -99,8 +99,8 @@ class NetCDFCXXInstaller(Installer):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=\
-                    Path(__file__).parents[1].joinpath('log', 'netcdf_cxx.log'),
+                 log_path=
+                 Path(__file__).parents[1].joinpath('log', 'netcdf_cxx.log'),
                  overwrite_on_exist=False):
         """
         Gets the NetCDF CXX version, sets the NetCDF CXX url and calls the

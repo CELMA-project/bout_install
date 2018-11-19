@@ -9,7 +9,8 @@ class SundialsInstaller(InstallerUsingCMake):
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 log_path=Path(__file__).parents[1].joinpath('log', 'sundials.log'),
+                 log_path=Path(__file__).parents[1].joinpath('log',
+                                                             'sundials.log'),
                  overwrite_on_exist=False):
         """
         Gets the Sundials version, sets the url and calls the super constructor

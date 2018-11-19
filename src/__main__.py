@@ -118,7 +118,7 @@ def main(config_path, add_to_bashrc=False):
         add_str_to_bashrc(final_str)
     else:
         print('Make sure that all binaries and libraries are in the PATH')
-        print('You can do so by making sure that the following is in .bashrc:\n')
+        print('You can do so by making sure that the following is in .bashrc:')
         print(final_str)
 
 
