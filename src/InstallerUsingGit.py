@@ -1,5 +1,3 @@
-import configparser
-import os
 import shutil
 from pathlib import Path
 from src.Installer import Installer
