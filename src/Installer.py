@@ -70,9 +70,6 @@ class Installer(object):
         # Set input
         self.log_path = log_path
 
-        # Obtain the current working directory
-        self.cwd = Path.cwd()
-
         # Obtain install dirs
         main_dir = self.config['install_dirs']['main_dir']
         install_dir = self.config['install_dirs']['install_dir']
@@ -312,13 +309,11 @@ class Installer(object):
             Path to the location to run the command from
         """
 
-        os.chdir(path)
-
         result = subprocess.run(command.split(),
                                 stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+                                stderr=subprocess.PIPE,
+                                cwd=path)
 
-        os.chdir(self.cwd)
         if result.returncode != 0:
             self._raise_subprocess_error(result)
 
