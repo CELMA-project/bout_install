@@ -99,7 +99,7 @@ def main(config_path, add_to_bashrc=False):
         petsc_installer.install()
         print('...done')
 
-    if config.getboolean('optional', 'slepsc'):
+    if config.getboolean('optional', 'slepc'):
         print('Installing slepc...')
         slepc_installer = SLEPcInstaller(config_path=config_path)
         slepc_installer.install()

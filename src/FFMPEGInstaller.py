@@ -71,7 +71,7 @@ class FFMPEGInstaller(Installer):
         Installs the FFMPEG package and its dependencies
         """
 
-        self.install_dependecies()
+        self.install_dependencies()
 
         self.logger.info('Installing FFMPEG')
         self.install_package(url=self.ffmpeg_url,
@@ -80,7 +80,7 @@ class FFMPEGInstaller(Installer):
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
 
-    def install_dependecies(self):
+    def install_dependencies(self):
         """
         Installs FFMPEG dependencies
         """

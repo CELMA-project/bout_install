@@ -59,8 +59,8 @@ class BOUTPPInstaller(InstallerUsingGit):
             self.extra_config_options['with-sundials'] = self.local_dir
         if self.config['optional']['petsc']:
             self.extra_config_options['with-petsc'] = self.local_dir
-        if self.config['optional']['slepsc']:
-            self.extra_config_options['with-slepsc'] = self.local_dir
+        if self.config['optional']['slepc']:
+            self.extra_config_options['with-slepc'] = self.local_dir
 
     def install(self):
         """
