@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.PETScInstaller import PETScInstaller
+from src.installer.CMakeInstaller import CMakeInstaller
 from tests.utils import BaseTestSetup
 
 
-class TestPETScInstaller(unittest.TestCase):
+class TestCMakeInstaller(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
@@ -14,14 +14,13 @@ class TestPETScInstaller(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.base_setup = BaseTestSetup('petsc')
+        self.base_setup = BaseTestSetup('cmake')
         self.base_setup.set_up()
 
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = PETScInstaller(config_path=self.config,
-                                        mpi_log_path=None)
+        self.installer = CMakeInstaller(config_path=self.config, log_path=None)
 
     def tearDown(self):
         """
@@ -30,9 +29,9 @@ class TestPETScInstaller(unittest.TestCase):
 
         self.base_setup.tear_down()
 
-    def test_petsc(self):
+    def test_cmake(self):
         """
-        Test that petsc gets installed
+        Test that cmake gets installed
         """
 
         self.installer.install()

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.GCCInstaller import GCCInstaller
+from src.cmake_installer.SundialsInstaller import SundialsInstaller
 from tests.utils import BaseTestSetup
 
 
-class TestGCCInstaller(unittest.TestCase):
+class TestSundialsInstaller(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
@@ -14,13 +14,14 @@ class TestGCCInstaller(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.base_setup = BaseTestSetup('gcc')
+        self.base_setup = BaseTestSetup('sundials')
         self.base_setup.set_up()
 
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = GCCInstaller(config_path=self.config, log_path=None)
+        self.installer = SundialsInstaller(config_path=self.config,
+                                           log_path=None)
 
     def tearDown(self):
         """
@@ -29,9 +30,9 @@ class TestGCCInstaller(unittest.TestCase):
 
         self.base_setup.tear_down()
 
-    def test_gcc(self):
+    def test_sundials(self):
         """
-        Test that GCC gets installed
+        Test that sundials gets installed
         """
 
         self.installer.install()

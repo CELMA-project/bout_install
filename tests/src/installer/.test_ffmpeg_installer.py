@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.SundialsInstaller import SundialsInstaller
+from src.installer.FFMPEGInstaller import FFMPEGInstaller
 from tests.utils import BaseTestSetup
 
 
-class TestSundialsInstaller(unittest.TestCase):
+class TestFFMPEGInstaller(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
@@ -14,14 +14,18 @@ class TestSundialsInstaller(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.base_setup = BaseTestSetup('sundials')
+        self.base_setup = BaseTestSetup('ffmpeg')
         self.base_setup.set_up()
 
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = SundialsInstaller(config_path=self.config,
-                                           log_path=None)
+        self.installer = \
+            FFMPEGInstaller(config_path=self.config,
+                            ffmpeg_log_path=None,
+                            nasm_log_path=None,
+                            yasm_log_path=None,
+                            x264_log_path=None)
 
     def tearDown(self):
         """
@@ -30,9 +34,9 @@ class TestSundialsInstaller(unittest.TestCase):
 
         self.base_setup.tear_down()
 
-    def test_sundials(self):
+    def test_ffmpeg(self):
         """
-        Test that sundials gets installed
+        Test that ffmpeg gets installed
         """
 
         self.installer.install()

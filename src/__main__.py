@@ -4,17 +4,17 @@
 import argparse
 import configparser
 from pathlib import Path
-from src.BOUTPPInstaller import BOUTPPInstaller
-from src.CMakeInstaller import CMakeInstaller
-from src.FFMPEGInstaller import FFMPEGInstaller
-from src.FFTWInstaller import FFTWInstaller
-from src.GCCInstaller import GCCInstaller
-from src.HDF5Installer import HDF5Installer
-from src.MPIInstaller import MPIInstaller
-from src.NetCDFInstaller import NetCDFInstaller
-from src.PETScInstaller import PETScInstaller
-from src.SLEPcInstaller import SLEPcInstaller
-from src.SundialsInstaller import SundialsInstaller
+from src.git_installer.BOUTPPInstaller import BOUTPPInstaller
+from src.installer.CMakeInstaller import CMakeInstaller
+from src.installer.FFMPEGInstaller import FFMPEGInstaller
+from src.installer.FFTWInstaller import FFTWInstaller
+from src.installer.GCCInstaller import GCCInstaller
+from src.installer.HDF5Installer import HDF5Installer
+from src.installer.MPIInstaller import MPIInstaller
+from src.installer.NetCDFInstaller import NetCDFInstaller
+from src.installer.PETScInstaller import PETScInstaller
+from src.installer.SLEPcInstaller import SLEPcInstaller
+from src.cmake_installer.SundialsInstaller import SundialsInstaller
 
 
 def main(config_path, add_to_bashrc=False):

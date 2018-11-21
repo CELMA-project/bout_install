@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.HDF5Installer import HDF5Installer
+from src.installer.SLEPcInstaller import SLEPcInstaller
 from tests.utils import BaseTestSetup
 
 
-class TestHDF5Installer(unittest.TestCase):
+class TestSLEPcInstaller(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
@@ -14,13 +14,14 @@ class TestHDF5Installer(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.base_setup = BaseTestSetup('hdf5')
+        self.base_setup = BaseTestSetup('slepc')
         self.base_setup.set_up()
 
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
-        self.installer = HDF5Installer(config_path=self.config, log_path=None)
+        self.installer = SLEPcInstaller(config_path=self.config,
+                                        mpi_log_path=None)
 
     def tearDown(self):
         """
@@ -29,9 +30,9 @@ class TestHDF5Installer(unittest.TestCase):
 
         self.base_setup.tear_down()
 
-    def test_hdf5(self):
+    def test_slepc(self):
         """
-        Test that HDF5 gets installed
+        Test that slepc gets installed
         """
 
         self.installer.install()

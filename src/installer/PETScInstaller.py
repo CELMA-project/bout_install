@@ -1,33 +1,29 @@
 from pathlib import Path
 from src.Installer import Installer
-from src.PETScInstaller import PETScInstaller
+from src.installer.MPIInstaller import MPIInstaller
 
 
-class SLEPcInstaller(Installer):
+class PETScInstaller(Installer):
     """
-    Installer object for installing SLEPc
+    Installer object for installing PETSc
     """
 
     def __init__(self,
                  config_path=Path(__file__).parent.joinpath('config.ini'),
-                 slepc_log_path=Path(__file__).parents[1].joinpath('log',
-                                                                   'slepc.log'),
                  petsc_log_path=Path(__file__).parents[1].joinpath('log',
                                                                    'petsc.log'),
                  mpi_log_path=Path(__file__).parents[1].joinpath('log',
                                                                  'mpi.log'),
                  overwrite_on_exist=False):
         """
-        Gets the SLEPc version, sets the SLEPc url and calls the super
-        constructor
+        Gets the version and url of PETSc and calls the super constructor
+
+        The constructor will also make an object of the MPI installer and
 
         Parameters
         ----------
         config_path : Path or str
             The path to the get_configure_command file
-        slepc_log_path : None or Path or str
-            Path to the log file for SLEPc
-            If None, the log will directed to stderr
         petsc_log_path : None or Path or str
             Path to the log file for PETSc
             If None, the log will directed to stderr
@@ -40,20 +36,26 @@ class SLEPcInstaller(Installer):
 
         self.overwrite_on_exist = overwrite_on_exist
 
-        super().__init__(config_path=config_path, log_path=slepc_log_path)
+        super().__init__(config_path=config_path, log_path=petsc_log_path)
 
         self.petsc_version = self.config['versions']['petsc']
-        self.slepc_version = self.config['versions']['slepc']
+        self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
+                          f'petsc-{self.petsc_version}.tar.gz')
 
         # Create dependency installer
-        self.petsc = PETScInstaller(config_path=config_path,
-                                    petsc_log_path=petsc_log_path,
-                                    mpi_log_path=mpi_log_path)
+        self.mpi = MPIInstaller(config_path=config_path,
+                                log_path=mpi_log_path)
 
-        self.slepc_url = (f'http://slepc.upv.es/download/distrib/'
-                          f'slepc-{self.slepc_version}.tar.gz')
+        self.file_from_make = self.local_dir.joinpath('lib', 'libpetsc.a')
 
-        self.file_from_make = self.local_dir.joinpath('lib', 'libslepc.a')
+        self.extra_config_options = {'with-clanguage': 'cxx',
+                                     'with-mpi': 1,
+                                     'with-mpi-dir': f'{self.local_dir}',
+                                     'with-precision': 'double',
+                                     'with-scalar-type': 'real',
+                                     'with-shared-libraries': 0,
+                                     'download-fblaslapack': 1,
+                                     'download-f2cblaslapack': 1}
 
     @staticmethod
     def get_configure_command(config_options=None):
@@ -63,6 +65,7 @@ class SLEPcInstaller(Installer):
         Notes
         -----
         Configuring happens through python 2
+        https://github.com/petsc/petsc/blob/master/configure
 
         Parameters
         ----------
@@ -88,6 +91,21 @@ class SLEPcInstaller(Installer):
         config_str = f'python2 ./configure{options}'
         return config_str
 
+    def get_petsc_arch(self):
+        """
+        Returns the os dependent PETSC_ARCH variable
+
+        Returns
+        -------
+        petsc_arch : str
+            The PETSC_ARCH variable
+        """
+
+        tar_dir = self.get_tar_dir(self.get_tar_file_path(self.petsc_url))
+        petsc_arch = list(tar_dir.glob('arch*'))[0].name
+
+        return petsc_arch
+
     def make(self, path):
         """
         Make the package using make all and make test
@@ -98,53 +116,37 @@ class SLEPcInstaller(Installer):
             Path to the get_configure_command file
         """
 
-        make_options = \
-            (f'SLEPC_DIR={self.install_dir}/slepc-{self.slepc_version}'
-             f' PETSC_DIR={self.local_dir}')
+        petsc_dir = f'PETSC_DIR={self.install_dir}/petsc-{self.petsc_version}'
 
-        make_str = f'make {make_options}'
-        self.run_subprocess(make_str, path)
+        petsc_arch = f'PETSC_ARCH={self.get_petsc_arch()}'
 
-        make_install_str = f'make {make_options} install'
+        make_all_str = f'make {petsc_dir} {petsc_arch} all'
+        self.run_subprocess(make_all_str, path)
+
+        make_install_str = f'make {petsc_dir} {petsc_arch} install'
         self.run_subprocess(make_install_str, path)
 
-        make_test_options =  \
-            (f'SLEPC_DIR={self.local_dir}'
-             f' PETSC_DIR={self.local_dir}'
-             f' PETSC_ARCH=')
-        make_test_str = f'make {make_test_options} check'
+        make_test_str = f'make PETSC_DIR={self.local_dir} PETSC_ARCH= test'
         self.run_subprocess(make_test_str, path)
 
     def install(self):
         """
-        Installs the SLEPc package and its dependencies
+        Installs PETSc and its dependencies
         """
 
         self.install_dependencies()
 
-        # Set config log path
-        # NOTE: The configuration log is hiding in strange places in SLEPc,
-        #       we'll therefore try to glob us to the configure.log
-        tar_dir = Path(self.get_tar_file_path(self.slepc_url)).\
-            absolute().parent.joinpath(f'slepc-{self.slepc_version}')
-        path_config_logs = sorted(tar_dir.glob('**/configure.log'))
-        if len(path_config_logs) == 0:
-            # No configuration file found, might as well set it to configure.log
-            path_config_log = 'configure.log'
-        else:
-            # Configuration files found, use the first
-            path_config_log = path_config_logs[0]
-
-        self.logger.info('Installing SLEPc')
-        self.install_package(url=self.slepc_url,
+        self.logger.info('Installing PETSc')
+        self.install_package(url=self.petsc_url,
                              file_from_make=self.file_from_make,
-                             path_config_log=path_config_log,
+                             path_config_log='configure.log',
+                             extra_config_option=self.extra_config_options,
                              overwrite_on_exist=self.overwrite_on_exist)
         self.logger.info('Installation completed successfully')
 
     def install_dependencies(self):
         """
-        Installs SLEPc dependencies
+        Install PETSc dependencies
         """
 
-        self.petsc.install()
+        self.mpi.install()

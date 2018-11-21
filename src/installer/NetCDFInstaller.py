@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from src.Installer import Installer
-from src.HDF5Installer import HDF5Installer
+from src.installer.HDF5Installer import HDF5Installer
 
 
 class NetCDFInstaller(Installer):

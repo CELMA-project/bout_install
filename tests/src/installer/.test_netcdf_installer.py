@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from src.FFMPEGInstaller import FFMPEGInstaller
+from src.installer.NetCDFInstaller import NetCDFInstaller
 from tests.utils import BaseTestSetup
 
 
-class TestFFMPEGInstaller(unittest.TestCase):
+class TestNetCDFInstaller(unittest.TestCase):
     def setUp(self):
         """
         Set up global test parameters, and modify config.ini
@@ -14,18 +14,17 @@ class TestFFMPEGInstaller(unittest.TestCase):
         A back-up of config.ini is made prior to modification
         """
 
-        self.base_setup = BaseTestSetup('ffmpeg')
+        self.base_setup = BaseTestSetup('netcdf')
         self.base_setup.set_up()
 
         # Setup the config path
         self.config = self.base_setup.test_config_ini_path
 
         self.installer = \
-            FFMPEGInstaller(config_path=self.config,
-                            ffmpeg_log_path=None,
-                            nasm_log_path=None,
-                            yasm_log_path=None,
-                            x264_log_path=None)
+            NetCDFInstaller(config_path=self.config,
+                            netcdf_log_path=None,
+                            netcdf_cxx_log_path=None,
+                            hdf5_log_path=None)
 
     def tearDown(self):
         """
@@ -34,9 +33,9 @@ class TestFFMPEGInstaller(unittest.TestCase):
 
         self.base_setup.tear_down()
 
-    def test_ffmpeg(self):
+    def test_netcdf(self):
         """
-        Test that ffmpeg gets installed
+        Test that netcdf gets installed
         """
 
         self.installer.install()
