@@ -1,21 +1,17 @@
-
-
 [![Build Status](https://travis-ci.org/CELMA-project/bout_install.svg?branch=master)](https://travis-ci.org/CELMA-project/bout_install)
 [![codecov](https://codecov.io/gh/CELMA-project/bout_install/branch/master/graph/badge.svg)](https://codecov.io/gh/CELMA-project/bout_install)
 [![PEP8](https://img.shields.io/badge/code%20style-PEP8-brightgreen.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![Python](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-LGPL--3.0-blue.svg)](https://github.com/CELMA-project/bout_install/blob/master/LICENSE)
 
-* []()
-
 # bout_install
 
-Python package to install [BOUT++](http://boutproject.github.io) and it's 
+Python package to install [BOUT++](http://boutproject.github.io) and its 
 dependencies.
 
 > **NOTE**: This package is meant as a "last resort" to install BOUT++, for 
 example when you are not a `root` user, and you are trying to install on a 
-tricky system.
+"tricky" system.
 Othervise 
 BOUT++ can easily be installed using 
 [docker](https://bout-dev.readthedocs.io/en/latest/user_docs/installing.html#docker-image)
@@ -27,11 +23,96 @@ or installed as explained in the BOUT ++ [documentation](https://bout-dev.readth
 `bout_install` is a lightweight package, and requires only `python3`, 
 `requests` and an internet connection to run. 
 
+Building `BOUT++` and dependencies can be done by executing
+
+```python
+from bout_install import install_bout
+install_bout(config_path=None, add_to_bashrc=False)
+```
+
+or from command-line
+
+```bash
+install_bout --help
+```
+
+which returns
+
+```
+usage: install_bout.py [-h] [-c CONFIG] [-a]
+
+Install BOUT++ with dependencies
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Path to the configuration file. See
+                        bout_install/config.ini for details
+  -a, --add_to_bashrc   If set, paths to binaries and libraries of
+                        dependencies will be added to .bashrc
+```
+
+This will build BOUT++ and its dependencies according to the content of 
+[`config.ini`](bout_install/config.ini):
+
+```ini
+[bout_options]
+# Let these be empty for default behavior
+# Read docstring of InstallerUsingGit.InstallerUsingGit.__init__ for details
+# NOTE: Commit 8567b2d5bb5f4b70face0b8d0849fc1bbafbbdb0 is known to work
+git_dir =
+checkout =
+enable_checks = no
+enable_optimize = 3
+
+[install_dirs]
+# Let these be empty for default behavior
+# Read docstring of Installer.Installer.setup_install_dirs for details
+main_dir =
+install_dir =
+local_dir =
+examples_dir =
+
+[required]
+fftw = true
+hdf5 = true
+mpi = true
+netcdf = true
+
+[optional]
+cmake = false
+ffmpeg = false
+gcc = false
+slepc = true
+sundials = true
+# NOTE: PETSc is installed if slepc is true
+petsc = false
+
+[versions]
+cmake = 3.7.2
+ffmpeg = 3.1.4
+fftw = 3.3.6-pl2
+gcc = 6.1.0
+hdf5 = 1.10.1
+mpi = 3.2
+nasm = 2.13.03
+netcdf = 4.4.1.1
+netcdf_cxx = 4.3.0
+# NOTE: Only certain PETSc versions are supported by BOUT++
+petsc = 3.10.0
+# NOTE: Sundials 2.7.0 have given openmp problems
+sundials = 2.6.2
+# NOTE: Must correspond to the PETSc version
+slepc = 3.10.0
+yasm = 1.3.0
+x264 = x264-snapshot-20180709-2245-stable
+```
+
 ### Installing from pip
 
 The package can be installed from `pip`:
 
-```
+```bash
 pip install bout_install
 ```
 
@@ -44,22 +125,38 @@ Alternatively it can be installed from source
 The prerequisites can be installed through
 [`requirements.txt`](https://pip.pypa.io/en/stable/user_guide/#requirements-files):
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+The test suite can be executed through `pytest` or through `codecov pytest-cov`.
+Installation through
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
+```bash
+pip install pytest
 ```
 
+or
+
+```bash
+pip install codecov pytest-cov
+```
+
+and run with
+
+```bash
+pytest
+```
+
+or
+ 
+```bash
+pytest --cov=./
+```
+
+respectively
 
 ## Contributing
 

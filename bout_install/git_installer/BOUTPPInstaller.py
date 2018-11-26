@@ -19,7 +19,7 @@ class BOUTPPInstaller(InstallerUsingGit):
         Notes
         -----
         The BOUTPPInstaller does not install its dependencies.
-        See bout_install.__main__.main for installation of dependencies
+        See bout_install.main.install_bout for installation of dependencies
 
         Parameters
         ----------
