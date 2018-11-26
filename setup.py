@@ -1,17 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
 import setuptools
-from bout_install import __version__
-from bout_install import __name__
+from pathlib import Path
 
+name = 'bout_install'
+root_path = Path(__file__).parent
+init_path = root_path.joinpath(name, '__init__.py')
+readme_path = root_path.joinpath('README.md')
 
-with open('README.md', 'r') as fh:
-    long_description = fh.read()
+# https://packaging.python.org/guides/single-sourcing-package-version/
+with init_path.open('r') as f:
+    version_file = f.read()
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        version = version_match.group(1)
+    else:
+        raise RuntimeError('Unable to find version string.')
+
+with readme_path.open('r') as f:
+    long_description = f.read()
 
 setuptools.setup(
-    name=__name__,
-    version=__version__,
+    name=name,
+    version=version,
     author='Michael Løiten',
     author_email='michael.l.magnussen@gmail.com',
     description='Python package to install BOUT++ and its dependencies',
