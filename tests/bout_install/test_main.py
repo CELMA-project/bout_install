@@ -6,8 +6,8 @@ import unittest
 import shutil
 import subprocess
 from pathlib import Path
-from bout_install.__main__ import main
-from bout_install.__main__ import add_str_to_bashrc
+from bout_install.main import install_bout
+from bout_install.main import add_str_to_bashrc
 from tests.utils import BaseTestSetup
 
 
@@ -37,7 +37,7 @@ class TestMain(unittest.TestCase):
         Test the installation and that we can run blob2d with PETSc
         """
 
-        main(self.config)
+        install_bout(self.config)
 
         # We now try to make blob 2d
         # The os.environ from BOUTPPInstaller should persist, so no need of
