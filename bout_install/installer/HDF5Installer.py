@@ -33,7 +33,7 @@ class HDF5Installer(Installer):
         hdf5_major_minor_version = '.'.join(self.hdf5_version.split('.')[:2])
         self.hdf5_url = (f'https://support.hdfgroup.org/ftp/HDF5/releases/'
                          f'hdf5-{hdf5_major_minor_version}/'
-                         f'hdf5-{self.hdf5_version}/bout_install/'
+                         f'hdf5-{self.hdf5_version}/src/'
                          f'hdf5-{self.hdf5_version}.tar.gz')
         self.file_from_make = self.local_dir.joinpath('bin', 'h5c++')
 
