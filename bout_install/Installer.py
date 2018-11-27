@@ -487,13 +487,3 @@ class Installer(object):
         self.logger.error(result.stderr)
 
         result.check_returncode()
-
-# FIXME: Multiprocess: One process kills all on error, and error is logged
-# FIXME: x264 from git (needed for ffmpeg)
-# FIXME: Add stuff to bashrc or bash_profile
-# FIXME: Bash stuff portable?
-# FIXME: BOUT++ from git
-# FIXME: netcdf depends on hdf5
-# FIXME: prepend wget --no-check-certificate to cmake
-# FIXME: gfortran as a dependency?
-# FIXME: Update README

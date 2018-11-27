@@ -12,7 +12,7 @@ dependencies.
 > **NOTE**: This package is meant as a "last resort" to install BOUT++, for 
 example when you are not a `root` user, and you are trying to install on a 
 "tricky" system.
-Othervise 
+Otherwise 
 BOUT++ can easily be installed using 
 [docker](https://bout-dev.readthedocs.io/en/latest/user_docs/installing.html#docker-image)
 or installed as explained in the BOUT ++ [documentation](https://bout-dev.readthedocs.io/en/latest/user_docs/installing.html#installing-dependencies)
@@ -158,27 +158,19 @@ pytest --cov=./
 
 respectively
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+> **NOTE:** Due to time constraints of automatic testing with Travis, the 
+unittests have been "blinded" by adding a "." in front of the name. In this 
+way `pytest` will ignore those test. "Un-blind" them by removing the leading "
+." in order to run them. 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU Lesser General Public License - see the 
+[LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
-
+* The [BOUT++ team](http://boutproject.github.io/about/) for fast and 
+accurate response on the 
+[issue tracker](https://github.com/boutproject/BOUT-dev/issues) and 
+[slack-channel](http://boutproject.github.io/documentation/)
