@@ -36,7 +36,8 @@ setuptools.setup(
     install_requires=['requests>=2.20.1'],
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: GNU Lesser General Public License v3.0',
+        ('License :: OSI Approved :: '
+         'GNU Lesser General Public License v3 or later (LGPLv3+)'),
         'Operating System :: OS Independent',
     ],
     entry_points={'console_scripts': ['bout_install = bout_install.main:main']},
