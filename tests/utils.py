@@ -26,7 +26,7 @@ class BaseTestSetup(object):
 
         self.main_dir = root_dir.joinpath(f'test_main_dir_{test_name}')
         self.other_dir = root_dir.joinpath(f'test_other_dir_{test_name}')
-        self.config_ini_path = root_dir.joinpath('src', 'config.ini')
+        self.config_ini_path = root_dir.joinpath('bout_install', 'config.ini')
         self.test_config_ini_path = \
             self.config_ini_path.parent.joinpath(f'config_{test_name}.ini')
 
@@ -47,6 +47,8 @@ class BaseTestSetup(object):
             self.config.read_file(f)
 
         self.config['install_dirs']['main_dir'] = str(self.main_dir)
+        self.config['bout_options']['git_dir'] = \
+            str(self.main_dir.joinpath('BOUT-dev'))
         with self.test_config_ini_path.open('w') as f:
             self.config.write(f)
 
