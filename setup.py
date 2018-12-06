@@ -33,6 +33,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/CELMA-project/bout_install',
     packages=setuptools.find_packages(),
+    keywords=['bout++', 'bout', 'installation', 'plasma', 'turbulence'],
     install_requires=['requests>=2.20.1'],
     classifiers=[
         'Programming Language :: Python :: 3',
