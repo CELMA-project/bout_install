@@ -47,19 +47,24 @@ class BOUTPPInstaller(InstallerUsingGit):
         checks = self.config['bout_options']['enable_checks']
         optimize = self.config['bout_options']['enable_optimize']
 
-        self.extra_config_options = {'with-fftw': self.local_dir,
-                                     'with-netcdf': self.local_dir,
-                                     'enable-checks': checks,
+        self.extra_config_options = {'enable-checks': checks,
                                      'enable-optimize': optimize}
 
-        if self.config['required']['hdf5']:
+        if self.config.getboolean('required', 'fftw') or \
+                not self.use_preinstalled:
+            self.extra_config_options['with-fftw'] = self.local_dir
+        if self.config.getboolean('required', 'netcdf') or \
+                not self.use_preinstalled:
+            self.extra_config_options['with-netcdf'] = self.local_dir
+
+        if self.config.getboolean('required', 'hdf5'):
             self.extra_config_options['with-hdf5'] =\
                 self.local_dir.joinpath('bin', 'h5cc')
-        if self.config['optional']['sundials']:
+        if self.config.getboolean('optional', 'sundials'):
             self.extra_config_options['with-sundials'] = self.local_dir
-        if self.config['optional']['petsc']:
+        if self.config.getboolean('optional', 'petsc'):
             self.extra_config_options['with-petsc'] = self.local_dir
-        if self.config['optional']['slepc']:
+        if self.config.getboolean('optional', 'slepc'):
             self.extra_config_options['with-slepc'] = self.local_dir
 
     def install(self):
