@@ -57,7 +57,8 @@ class PETScInstaller(Installer):
                                      'download-fblaslapack': 1,
                                      'download-f2cblaslapack': 1}
 
-        if self.config['required']['mpi'] or not self.use_preinstalled:
+        if self.config.getboolean('required', 'mpi') or \
+                not self.use_preinstalled:
             self.extra_config_options['with-mpi-dir'] = f'{self.local_dir}'
 
     @staticmethod

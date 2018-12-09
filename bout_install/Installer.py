@@ -72,7 +72,7 @@ class Installer(object):
 
         # Obtain install options
         self.use_preinstalled = \
-            self.config['install_options']['use_preinstalled']
+            self.config.getboolean('install_options', 'use_preinstalled')
         main_dir = self.config['install_options']['main_dir']
         install_dir = self.config['install_options']['install_dir']
         local_dir = self.config['install_options']['local_dir']
