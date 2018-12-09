@@ -41,5 +41,7 @@ setuptools.setup(
          'GNU Lesser General Public License v3 or later (LGPLv3+)'),
         'Operating System :: OS Independent',
     ],
-    entry_points={'console_scripts': ['bout_install = bout_install.main:main']},
+    entry_points={'console_scripts': [
+        'bout_install = bout_install.main:bout_install_command_line'
+    ]},
 )
