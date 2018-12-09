@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from bout_install.Installer import Installer
 from bout_install.installer.MPIInstaller import MPIInstaller
@@ -50,12 +51,15 @@ class PETScInstaller(Installer):
 
         self.extra_config_options = {'with-clanguage': 'cxx',
                                      'with-mpi': 1,
-                                     'with-mpi-dir': f'{self.local_dir}',
                                      'with-precision': 'double',
                                      'with-scalar-type': 'real',
                                      'with-shared-libraries': 0,
                                      'download-fblaslapack': 1,
                                      'download-f2cblaslapack': 1}
+
+        if self.config.getboolean('required', 'mpi') or \
+                not self.use_preinstalled:
+            self.extra_config_options['with-mpi-dir'] = f'{self.local_dir}'
 
     @staticmethod
     def get_configure_command(config_options=None):

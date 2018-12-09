@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from bout_install.Installer import Installer
 
@@ -45,8 +46,12 @@ class HDF5Installer(Installer):
         """
 
         self.logger.info('Installing HDF5')
-        self.install_package(url=self.hdf5_url,
-                             file_from_make=self.file_from_make,
-                             extra_config_option=self.extra_config_options,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+
+        if shutil.which('h5c++') is None or not self.use_preinstalled:
+            self.install_package(url=self.hdf5_url,
+                                 file_from_make=self.file_from_make,
+                                 extra_config_option=self.extra_config_options,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('Found h5c++ in PATH, skipping...')

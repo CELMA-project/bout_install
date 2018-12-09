@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from bout_install.Installer import Installer
 
@@ -74,11 +75,15 @@ class FFMPEGInstaller(Installer):
         self.install_dependencies()
 
         self.logger.info('Installing FFMPEG')
-        self.install_package(url=self.ffmpeg_url,
-                             file_from_make=self.file_from_make,
-                             extra_config_option=self.extra_config_options,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+
+        if shutil.which('ffmpeg') is None or not self.use_preinstalled:
+            self.install_package(url=self.ffmpeg_url,
+                                 file_from_make=self.file_from_make,
+                                 extra_config_option=self.extra_config_options,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('Found ffmpeg in PATH, skipping...')
 
     def install_dependencies(self):
         """
@@ -132,10 +137,13 @@ class NASMInstaller(Installer):
 
         self.logger.info('Installing NASM')
 
-        self.install_package(url=self.nasm_url,
-                             file_from_make=self.file_from_make,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+        if shutil.which('nasm') is None or not self.use_preinstalled:
+            self.install_package(url=self.nasm_url,
+                                 file_from_make=self.file_from_make,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('Found nasm in PATH, skipping...')
 
 
 class YASMInstaller(Installer):
@@ -180,10 +188,13 @@ class YASMInstaller(Installer):
 
         self.logger.info('Installing YASM')
 
-        self.install_package(url=self.yasm_url,
-                             file_from_make=self.file_from_make,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+        if shutil.which('yasm') is None or not self.use_preinstalled:
+            self.install_package(url=self.yasm_url,
+                                 file_from_make=self.file_from_make,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('Found yasm in PATH, skipping...')
 
 
 class X264Installer(Installer):
@@ -230,8 +241,11 @@ class X264Installer(Installer):
 
         self.logger.info('Installing X264')
 
-        self.install_package(url=self.x264_url,
-                             file_from_make=self.file_from_make,
-                             extra_config_option=self.extra_config_options,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+        if shutil.which('x264') is None or not self.use_preinstalled:
+            self.install_package(url=self.x264_url,
+                                 file_from_make=self.file_from_make,
+                                 extra_config_option=self.extra_config_options,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('Found x264 in PATH, skipping...')
