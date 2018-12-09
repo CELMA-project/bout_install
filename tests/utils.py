@@ -46,7 +46,7 @@ class BaseTestSetup(object):
         with self.test_config_ini_path.open() as f:
             self.config.read_file(f)
 
-        self.config['install_dirs']['main_dir'] = str(self.main_dir)
+        self.config['install_options']['main_dir'] = str(self.main_dir)
         self.config['bout_options']['git_dir'] = \
             str(self.main_dir.joinpath('BOUT-dev'))
         with self.test_config_ini_path.open('w') as f:

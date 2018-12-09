@@ -70,11 +70,13 @@ class Installer(object):
         # Set input
         self.log_path = log_path
 
-        # Obtain install dirs
-        main_dir = self.config['install_dirs']['main_dir']
-        install_dir = self.config['install_dirs']['install_dir']
-        local_dir = self.config['install_dirs']['local_dir']
-        examples_dir = self.config['install_dirs']['examples_dir']
+        # Obtain install options
+        self.use_preinstalled = \
+            self.config['install_options']['use_preinstalled']
+        main_dir = self.config['install_options']['main_dir']
+        install_dir = self.config['install_options']['install_dir']
+        local_dir = self.config['install_options']['local_dir']
+        examples_dir = self.config['install_options']['examples_dir']
 
         self.main_dir = main_dir if main_dir != '' else None
         self.install_dir = install_dir if install_dir != '' else None

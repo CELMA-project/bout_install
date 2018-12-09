@@ -67,7 +67,9 @@ checkout =
 enable_checks = no
 enable_optimize = 3
 
-[install_dirs]
+[install_options]
+# If packages not residing in local should be used
+use_preinstalled = false
 # Let these be empty for default behavior
 # Read docstring of Installer.Installer.setup_install_dirs for details
 main_dir =

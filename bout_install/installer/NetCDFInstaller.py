@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 from bout_install.Installer import Installer
 from bout_install.installer.HDF5Installer import HDF5Installer
@@ -75,11 +76,15 @@ class NetCDFInstaller(Installer):
         self.install_dependencies()
 
         self.logger.info('Installing NetCDF')
-        self.install_package(url=self.netcdf_url,
-                             file_from_make=self.file_from_make,
-                             extra_config_option=self.extra_config_options,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+
+        if shutil.which('ncdump') is None or not self.use_preinstalled:
+            self.install_package(url=self.netcdf_url,
+                                 file_from_make=self.file_from_make,
+                                 extra_config_option=self.extra_config_options,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('Found ncdump in PATH, skipping...')
 
         # Install the cxx interface
         self.netcdf_cxx.install()
@@ -133,7 +138,11 @@ class NetCDFCXXInstaller(Installer):
         """
 
         self.logger.info('Installing NetCDF CXX interface')
-        self.install_package(url=self.netcdf_cxx_url,
-                             file_from_make=self.file_from_make,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+
+        if shutil.which('ncxx4-config') is None or not self.use_preinstalled:
+            self.install_package(url=self.netcdf_cxx_url,
+                                 file_from_make=self.file_from_make,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('Found ncxx4-config in PATH, skipping...')

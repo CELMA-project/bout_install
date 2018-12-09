@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from bout_install.Installer import Installer
 
@@ -40,7 +41,11 @@ class MPIInstaller(Installer):
         """
 
         self.logger.info('Installing MPI')
-        self.install_package(url=self.mpi_url,
-                             file_from_make=self.file_from_make,
-                             overwrite_on_exist=self.overwrite_on_exist)
-        self.logger.info('Installation completed successfully')
+
+        if shutil.which('mpicxx') is None or not self.use_preinstalled:
+            self.install_package(url=self.mpi_url,
+                                 file_from_make=self.file_from_make,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            self.logger.info('Installation completed successfully')
+        else:
+            self.logger.info('mpicxx found in PATH, skipping...')
