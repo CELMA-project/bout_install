@@ -34,23 +34,24 @@ install_bout(config_path=None, add_to_bashrc=False)
 or from command-line
 
 ```bash
-install_bout --help
+bout_install --help
 ```
 
 which returns
 
 ```
-usage: install_bout.py [-h] [-c CONFIG] [-a]
+usage: bout_install [-h] [-c CONFIG] [-a]
 
 Install BOUT++ with dependencies
 
 optional arguments:
   -h, --help            show this help message and exit
   -c CONFIG, --config CONFIG
-                        Path to the configuration file. See
-                        bout_install/config.ini for details
+                        Path to the configuration file. Default is
+                        /path/to/bout_install/bout_install/config.ini
   -a, --add_to_bashrc   If set, paths to binaries and libraries of
-                        dependencies will be added to .bashrc
+                        dependencies will be added to .bashrc. Default is
+                        false
 ```
 
 This will build BOUT++ and its dependencies according to the content of 
@@ -114,20 +115,15 @@ x264 = x264-snapshot-20180709-2245-stable
 The package can be installed from `pip`:
 
 ```bash
-pip install bout_install
+pip install bout-install
 ```
 
 ### Installing from source
 
 Alternatively it can be installed from source
 
-#### Prerequisites
-
-The prerequisites can be installed through
-[`requirements.txt`](https://pip.pypa.io/en/stable/user_guide/#requirements-files):
-
 ```bash
-pip install -r requirements.txt
+python setup.py install
 ```
 
 ## Running the tests

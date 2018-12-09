@@ -19,7 +19,7 @@ from bout_install.cmake_installer.SundialsInstaller import SundialsInstaller
 
 def install_bout(config_path=None, add_to_bashrc=False):
     """
-    Function which installs BOUT++ with its dependencies.
+    Function which installs BOUT++ and its dependencies.
 
     Parameters
     ----------
@@ -164,41 +164,38 @@ def get_args():
         to .bashrc
     """
 
+    root_dir = Path(__file__).absolute().parents[1]
+    config_path = root_dir.joinpath('bout_install', 'config.ini')
+
     parser = \
         argparse.ArgumentParser(description='Install BOUT++ with dependencies')
 
     parser.add_argument('-c',
                         '--config',
-                        help='Path to the configuration file. See '
-                             'bout_install/config.ini for details',
-                        required=False)
+                        help=f'Path to the configuration file. '
+                             f'Default is {config_path}',
+                        default=str(config_path))
     parser.add_argument('-a',
                         '--add_to_bashrc',
                         help='If set, paths to binaries and libraries of '
-                             'dependencies will be added to .bashrc',
+                             'dependencies will be added to .bashrc. '
+                             'Default is false',
                         action='store_true',
-                        required=False)
+                        default=False)
 
     args = parser.parse_args()
 
-    if args.config is None:
-        config_path = None
-    else:
-        config_path = Path(args.config)
-
-    if args.add_to_bashrc:
-        add_to_bashrc = True
-    else:
-        add_to_bashrc = False
+    config_path = Path(args.config).absolute()
+    add_to_bashrc = args.add_to_bashrc
 
     return config_path, add_to_bashrc
 
 
-def main():
+def bout_install_command_line():
     """
-    The main routine which installs BOUT++
+    The main routine which installs BOUT++ and dependencies
 
     Can be used for command line interface
     """
-    config_path_, add_to_bashrc_ = get_args()
-    install_bout(config_path_, add_to_bashrc=add_to_bashrc_)
+    config_path, add_to_bashrc = get_args()
+    install_bout(config_path, add_to_bashrc=add_to_bashrc)
