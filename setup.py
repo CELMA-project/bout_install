@@ -35,6 +35,10 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     keywords=['bout++', 'bout', 'installation', 'plasma', 'turbulence'],
     install_requires=['requests>=2.20.1'],
+    package_data={
+        # Include all .ini files
+        '': ['*.ini']
+    },
     classifiers=[
         'Programming Language :: Python :: 3',
         ('License :: OSI Approved :: '
