@@ -1,4 +1,4 @@
-import shutil
+import requests
 from pathlib import Path
 from bout_install.Installer import Installer
 from bout_install.installer.MPIInstaller import MPIInstaller
@@ -42,6 +42,9 @@ class PETScInstaller(Installer):
         self.petsc_version = self.config['versions']['petsc']
         self.petsc_url = (f'http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/'
                           f'petsc-{self.petsc_version}.tar.gz')
+        self.petsc_mirror = (f'http://www.mcs.anl.gov/petsc/mirror/'
+                             f'release-snapshots/petsc-{self.petsc_version}'
+                             f'.tar.gz')
 
         # Create dependency installer
         self.mpi = MPIInstaller(config_path=config_path,
@@ -105,7 +108,12 @@ class PETScInstaller(Installer):
             The PETSC_ARCH variable
         """
 
-        tar_dir = self.get_tar_dir(self.get_tar_file_path(self.petsc_url))
+        try:
+            tar_dir = self.get_tar_dir(self.get_tar_file_path(self.petsc_url))
+        except requests.exceptions.HTTPError as e:
+            self.logger.warning(f'Got the following HTTP error: {e}')
+            tar_dir = \
+                self.get_tar_dir(self.get_tar_file_path(self.petsc_mirror))
         petsc_arch = list(tar_dir.glob('arch*'))[0].name
 
         return petsc_arch
