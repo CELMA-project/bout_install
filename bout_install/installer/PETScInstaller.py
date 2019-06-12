@@ -108,12 +108,8 @@ class PETScInstaller(Installer):
             The PETSC_ARCH variable
         """
 
-        try:
-            tar_dir = self.get_tar_dir(self.get_tar_file_path(self.petsc_url))
-        except requests.exceptions.HTTPError as e:
-            self.logger.warning(f'Got the following HTTP error: {e}')
-            tar_dir = \
-                self.get_tar_dir(self.get_tar_file_path(self.petsc_mirror))
+        tar_dir = self.get_tar_dir(self.get_tar_file_path(self.petsc_url))
+
         petsc_arch = list(tar_dir.glob('arch*'))[0].name
 
         return petsc_arch
@@ -149,11 +145,21 @@ class PETScInstaller(Installer):
         self.install_dependencies()
 
         self.logger.info('Installing PETSc')
-        self.install_package(url=self.petsc_url,
-                             file_from_make=self.file_from_make,
-                             path_config_log='configure.log',
-                             extra_config_option=self.extra_config_options,
-                             overwrite_on_exist=self.overwrite_on_exist)
+
+        try:
+            self.install_package(url=self.petsc_url,
+                                 file_from_make=self.file_from_make,
+                                 path_config_log='configure.log',
+                                 extra_config_option=self.extra_config_options,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+        except requests.exceptions.HTTPError as e:
+            self.logger.warning(f'Trying mirror after error: {e}')
+            self.install_package(url=self.petsc_mirror,
+                                 file_from_make=self.file_from_make,
+                                 path_config_log='configure.log',
+                                 extra_config_option=self.extra_config_options,
+                                 overwrite_on_exist=self.overwrite_on_exist)
+            
         self.logger.info('Installation completed successfully')
 
     def install_dependencies(self):
