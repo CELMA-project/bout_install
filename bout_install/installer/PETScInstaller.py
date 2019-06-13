@@ -159,7 +159,7 @@ class PETScInstaller(Installer):
                                  path_config_log='configure.log',
                                  extra_config_option=self.extra_config_options,
                                  overwrite_on_exist=self.overwrite_on_exist)
-            
+
         self.logger.info('Installation completed successfully')
 
     def install_dependencies(self):

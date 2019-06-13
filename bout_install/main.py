@@ -115,7 +115,7 @@ def install_bout(config_path=None, add_to_bashrc=False):
 
     final_str += (f'export LD_LIBRARY_PATH='
                   f'{boutpp_installer.local_dir.joinpath("lib")}:'
-                  f'LD_LIBRARY_PATH\n\n')
+                  f'$LD_LIBRARY_PATH\n\n')
 
     if add_to_bashrc:
         add_str_to_bashrc(final_str)
