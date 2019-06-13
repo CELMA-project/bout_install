@@ -113,6 +113,8 @@ def install_bout(config_path=None, add_to_bashrc=False):
     boutpp_installer.install()
     print('...done')
 
+    final_str += (f'export PATH="'
+                  f'{boutpp_installer.local_dir.joinpath("bin")}:$PATH"\n')
     final_str += (f'export LD_LIBRARY_PATH='
                   f'{boutpp_installer.local_dir.joinpath("lib")}:'
                   f'$LD_LIBRARY_PATH\n\n')
