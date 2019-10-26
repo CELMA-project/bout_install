@@ -3,11 +3,8 @@ language: python
 python:
   - "3.7"
 
-services:
-  - docker
-
-#before_install:
-#  - sudo apt-get install gfortran
+before_install:
+  - sudo apt-get install gfortran
 install:
   - pip install -r requirements.txt
   - pip install codecov pytest-cov
@@ -16,9 +13,3 @@ script:
 
 after_success:
   - codecov
-
-deploy:
-  provider: script
-  script: travis_wait 50 bash docker/deploy.sh
-#  on:
-#      branch: master
