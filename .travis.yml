@@ -1,7 +1,11 @@
+dist: xenial
 language: python
-
 python:
-  - "3.6"
+  - "3.7"
+
+services:
+  - docker
+
 before_install:
   - sudo apt-get install gfortran
 install:
@@ -9,5 +13,12 @@ install:
   - pip install codecov pytest-cov
 script:
   - travis_wait 50 pytest --cov=./
+
 after_success:
   - codecov
+
+deploy:
+  provider: script
+  script: bash docker/deploy.sh
+#  on:
+#      branch: master
