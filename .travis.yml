@@ -5,17 +5,17 @@ python:
 
 services:
   - docker
-
-before_install:
-  - sudo apt-get install gfortran
-install:
-  - pip install -r requirements.txt
-  - pip install codecov pytest-cov
-script:
-  - travis_wait 50 pytest --cov=./
-
-after_success:
-  - codecov
+#
+#before_install:
+#  - sudo apt-get install gfortran
+#install:
+#  - pip install -r requirements.txt
+#  - pip install codecov pytest-cov
+#script:
+#  - travis_wait 50 pytest --cov=./
+#
+#after_success:
+#  - codecov
 
 deploy:
   provider: script
