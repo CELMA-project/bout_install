@@ -1,23 +1,33 @@
-# Use ubuntu as the base layer
-FROM ubuntu:18.04
+# Use alpine as the base layer
+FROM python:alpine
 
-# Install apt dependencies
-RUN apt-get -yqq update
-RUN apt-get -yqq upgrade
-# Python dependencies (python2.7 is required for installing PETSc)
-RUN apt-get -yqq install python2.7 python3 python3-pip
-# Needed to make python2 a runnable command
-RUN ln /usr/bin/python2.7 /usr/bin/python2
-# Needed for bout-install dependencies
-RUN apt-get -yqq install git
-RUN apt-get -yqq install build-essential cmake gfortran m4 zlib1g-dev
+# Install dependencies
+RUN apk add --no-cache \
+ # Needed to clone BOUT-dev
+ git \
+ # Compiler base
+ # https://wiki.alpinelinux.org/wiki/GCC
+ # FIXME: May be changed for a different compiler?
+ build-base \
+ # Needed by mpi (although build-base is installed)
+ gfortran \
+ # Needed by netcdf
+ m4 \
+ zlib-dev \
+ # Needed by sundials
+ cmake \
+ # Needed for PETSc
+ python2
 
 # Install pip dependecies
-RUN pip3 install bout-install
+RUN pip3 install --no-cache-dir bout-install
 
 # Install BOUT-dev
-RUN bout_install -a
+# Note that we are removing the installation files from the layer
+RUN bout_install -a && rm -rf /root/install /root/examples
 
 # Set environment variables
 ENV PATH="/root/local/bin:${PATH}"
 ENV LD_LIBRARY_PATH="/root/local/lib:${LD_LIBRARY_PATH}"
+
+ENTRYPOINT ["/bin/sh"]
