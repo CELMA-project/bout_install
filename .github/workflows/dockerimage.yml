@@ -1,9 +1,6 @@
 name: Docker Image CI
 
-on:
-  push:
-    branches:    
-      - master 
+on: [push]
 
 jobs:
   build:
@@ -11,5 +8,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: docker build . --file docker/Dockerfile --tag bout_dev:$(date +%s)
+    - name: Build and publish the docker image
+      env:
+        DOCKER_USERNAME = ${{secrets.DOCKER_USERNAME}}
+        DOCKER_PASSWORD = ${{secrets.DOCKER_PASSWORD}}
+      run: ./docker/deploy.sh
