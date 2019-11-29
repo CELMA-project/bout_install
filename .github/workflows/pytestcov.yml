@@ -1,7 +1,9 @@
 name: Pytest with codecov
 
+on:
   # Run each time we push and pull requests
-on: [push, pull_request]
+  push:
+  pull_request:
   # Cron job
   # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#scheduled-events-schedule
   schedule:
