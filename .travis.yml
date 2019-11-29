@@ -9,7 +9,8 @@ install:
   - pip install -r requirements.txt
   - pip install codecov pytest-cov
 script:
-  - pytest --cov=./
+  # travis_wait is a workaround for no output received
+  - travis_wait 50 pytest --cov=./
 
 after_success:
   - codecov
