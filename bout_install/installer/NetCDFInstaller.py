@@ -47,8 +47,8 @@ class NetCDFInstaller(Installer):
         super().__init__(config_path=config_path, log_path=netcdf_log_path)
 
         self.netcdf_version = self.config['versions']['netcdf']
-        self.netcdf_url = (f'http://www.unidata.ucar.edu/downloads/netcdf/ftp/'
-                           f'netcdf-{self.netcdf_version}.tar.gz')
+        self.netcdf_url = (f'https://github.com/Unidata/netcdf-c/'
+                           f'archive/v{self.netcdf_version}.tar.gz')
 
         # CPPFLAGS and LDFLAGS must be exported
         # https://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg13261.html
