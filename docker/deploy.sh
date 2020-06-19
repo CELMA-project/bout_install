@@ -12,7 +12,7 @@ docker build -f docker/Dockerfile -t "$IMAGE":"$VERSION" .
 printf "\nTesting build\n"
 # Test that the build is working
 # NOTE: The /bin/sh is already stated in the ENTRYPOINT
-docker run --rm -it "$IMAGE":"$VERSION" -c 'cd $HOME/BOUT-dev/examples/conduction && make && ./conduction'
+docker run "$IMAGE":"$VERSION" -c 'cd $HOME/BOUT-dev/examples/conduction && make && ./conduction'
 printf "\nTest Passed\n"
 # NOTE: DOCKER_PASSWORD and DOCKER_USERNAME are environment secrets of
 #       the github repo
