@@ -30,9 +30,7 @@ class SundialsInstaller(InstallerUsingCMake):
         super().__init__(config_path=config_path, log_path=log_path)
 
         self.sundials_version = self.config['versions']['sundials']
-        self.sundials_url = (f'http://computation.llnl.gov/projects/'
-                             f'sundials/download/'
-                             f'sundials-{self.sundials_version}.tar.gz')
+        self.sundials_url = (f'https://computing.llnl.gov/sites/default/files/inline-files/sundials-{self.sundials_version}.tar.gz')
 
         self.file_from_make = self.local_dir.joinpath('lib',
                                                       'libsundials_cvode.a')
