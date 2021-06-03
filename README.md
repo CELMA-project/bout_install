@@ -5,6 +5,7 @@
 [![Python](https://img.shields.io/badge/python->=3.6-blue.svg)](https://www.python.org/)
 [![PEP8](https://img.shields.io/badge/code%20style-PEP8-brightgreen.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![License](https://img.shields.io/badge/license-LGPL--3.0-blue.svg)](https://github.com/CELMA-project/bout_install/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCELMA-project%2Fbout_install.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FCELMA-project%2Fbout_install?ref=badge_shield)
 
 # bout_install
 
@@ -167,6 +168,9 @@ way `pytest` will ignore those test. "Un-blind" them by removing the leading "
 
 This project is licensed under the GNU Lesser General Public License - see the 
 [LICENSE](LICENSE) file for details
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCELMA-project%2Fbout_install.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FCELMA-project%2Fbout_install?ref=badge_large)
 
 ## Acknowledgments
 
